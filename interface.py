@@ -11,6 +11,9 @@ class App(object):
         self.onKey = onKey
         self.loop = None
 
+        self.info_box = None
+        self.info_bar = None
+
         self.init_app(title, items)
 
     def init_app(self, title, items):
@@ -20,14 +23,17 @@ class App(object):
             urwid.connect_signal(button, 'click', self.select, it)
             body.append(
                 urwid.AttrMap(button, None, focus_map='reversed'))
-        main = urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
-        self.footer = urwid.Text('[Help] q: quit, c: continue old video')
+        vid_list = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        self.info_box = urwid.LineBox(urwid.Text('INFO'))
+
+        main = urwid.Frame(vid_list, footer=self.info_box)
+        self.info_bar = urwid.Text('[Help] q: quit, c: continue current video')
 
         self.loop = urwid.MainLoop(
             urwid.Frame(main,
                 header=urwid.Text(title),
-                footer=self.footer),
+                footer=self.info_bar),
             palette=[('reversed', 'standout', '')],
             unhandled_input=self.unhandled_input)
 

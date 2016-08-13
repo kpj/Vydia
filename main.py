@@ -58,6 +58,8 @@ class Vydia(object):
         self.app = App(
             self.playlist.title, [vid.title for vid in self.playlist],
             self.onSelect, self.onKey)
+
+        self.assemble_info_box()
         self.app.run()
 
     def play_video(self, vid, start_cmd=''):
@@ -85,8 +87,15 @@ class Vydia(object):
         self.footer_info('Waiting for input')
 
     def footer_info(self, msg):
-        self.app.footer.set_text(msg)
+        self.app.info_bar.set_text(msg)
         self.app.loop.draw_screen()
+
+    def assemble_info_box(self):
+        wid = self.app.info_box.base_widget
+        cur = self._state[self.playlist.title]['current']
+
+        wid.set_text('Current: {} ({})'.format(
+            cur['title'], cur['timestamp']))
 
     def onSelect(self, title):
         self.footer_info('Loading video ({})'.format(title))
@@ -116,6 +125,7 @@ class Vydia(object):
         }
 
         save_state(self._state)
+        self.assemble_info_box()
 
 def main():
     """ Main interface
