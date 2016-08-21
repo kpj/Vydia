@@ -46,10 +46,10 @@ class Playlist(object):
             return self._videos[self.vid_idx-1]
 
     def get_video_by_title(self, title):
-        for vid in self._videos:
+        for i, vid in enumerate(self._videos):
             if vid.title == title:
-                return vid
-        return None
+                return i, vid
+        return None, None
 
 class BasePlugin(metaclass=ABCMeta):
     @abstractmethod

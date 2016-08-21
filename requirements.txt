@@ -1,2 +1,3 @@
 pafy
 urwid
+mpv
