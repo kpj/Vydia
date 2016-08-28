@@ -3,6 +3,7 @@ Main interface
 """
 
 import os, re
+import sys
 import json, time
 import inspect
 import datetime
@@ -163,7 +164,11 @@ class Vydia(object):
 def main():
     """ Main interface
     """
-    vyd = Vydia(input('Enter playlist id\n-> '))
+    if len(sys.argv) != 2:
+        print('Usage: {} <playlist id>'.format(sys.argv[0]))
+        exit(-1)
+
+    vyd = Vydia(sys.argv[1])
     vyd.run()
 
 if __name__ == '__main__':
