@@ -28,7 +28,7 @@ class App(object):
         self.info_box = urwid.LineBox(urwid.Text('INFO'))
 
         main = urwid.Frame(vid_list, footer=self.info_box)
-        self.info_bar = urwid.Text('[Help] q: quit, c: continue current video')
+        self.info_bar = urwid.Text('[Help] q: quit, c: continue last video')
 
         self.loop = urwid.MainLoop(
             urwid.Frame(main,
