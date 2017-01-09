@@ -2,52 +2,13 @@
 Main interface
 """
 
-import os, re
-import sys
-import json, time
-import inspect
-import datetime
+import time
 import threading
-import collections
 
 from .interface import IntroScreen, App
 from .player import Player
+from .utils import *
 
-
-def load_state(fname='state.json'):
-    """ Load state
-    """
-    if not os.path.isfile(fname):
-        res = {}
-    else:
-        with open(fname) as fd:
-            res = json.load(fd)
-
-    return collections.defaultdict(dict, res)
-
-def save_state(state, fname='state.json'):
-    with open(fname, 'w') as fd:
-        json.dump(state, fd)
-
-def get_plugins():
-    """ Return list of available plugins
-    """
-    from .plugins import BasePlugin
-    for Cls in BasePlugin.__subclasses__():
-        yield Cls
-
-def ts2sec(ts):
-    x = time.strptime(ts, '%H:%M:%S')
-    sec = datetime.timedelta(
-        hours=x.tm_hour,
-        minutes=x.tm_min,
-        seconds=x.tm_sec).total_seconds()
-    return sec
-
-def sec2ts(sec):
-    m, s = divmod(sec, 60)
-    h, m = divmod(m, 60)
-    return '{:02}:{:02}:{:02}'.format(h, m, s)
 
 class Vydia(object):
     def __init__(self, _id):
@@ -83,7 +44,7 @@ class Vydia(object):
             save_state(self._state)
 
         self.app.set_title(self.playlist.title)
-        self.app.set_items(['{} ({})'.format(vid.title, time.strftime("%H:%M:%S", time.gmtime(vid.duration))) for vid in self.playlist])
+        self.app.set_items(['{} ({})'.format(vid.title, sec2ts(vid.duration)) for vid in self.playlist])
         self.assemble_info_box()
 
     def load_playlist(self, _id):
