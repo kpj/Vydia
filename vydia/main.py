@@ -96,8 +96,16 @@ class Vydia(object):
         raise RuntimeError('Playlist could not be loaded')
 
     def run(self):
+        # prefetch playlist title if possible
+        prelim_title = 'Loading...'
+        for title, data in self._state.items():
+            if data['id'] == self.id:
+                prelim_title = title
+                break
+
+        # setup app
         self.app = App(
-            'Loading...', [],
+            prelim_title, [],
             self.onSelect, self.onKey)
 
         self.app.init_app()
