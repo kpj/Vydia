@@ -10,8 +10,8 @@ import datetime
 import threading
 import collections
 
-from interface import IntroScreen, App
-from player import Player
+from .interface import IntroScreen, App
+from .player import Player
 
 
 def load_state(fname='state.json'):
@@ -32,8 +32,8 @@ def save_state(state, fname='state.json'):
 def get_plugins():
     """ Return list of available plugins
     """
-    import plugins
-    for Cls in plugins.BasePlugin.__subclasses__():
+    from .plugins import BasePlugin
+    for Cls in BasePlugin.__subclasses__():
         yield Cls
 
 def ts2sec(ts):
