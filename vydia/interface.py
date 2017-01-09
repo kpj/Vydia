@@ -24,14 +24,14 @@ class BaseView(object):
         self.loop.run()
 
     def select(self, button, choice):
-        if not self.onSelect is None:
+        if self.onSelect is not None:
             self.onSelect(choice)
 
     def unhandled_input(self, key):
         if key in ('Q', 'q', 'esc'):
             raise urwid.ExitMainLoop()
 
-        if not self.onKey is None:
+        if self.onKey is not None:
             self.onKey(key)
 
 class IntroScreen(BaseView):
@@ -71,7 +71,7 @@ class IntroScreen(BaseView):
             None, focus_map='reversed')
         self.main_list.append(cur)
 
-        if not self.onButton_custom is None:
+        if self.onButton_custom is not None:
             self.onButton_custom(sel)
 
 class App(BaseView):

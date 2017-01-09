@@ -37,7 +37,7 @@ class Vydia(object):
         self.footer_info('Loading...')
 
         self.playlist = self.load_playlist(self.id)
-        if not self.playlist.title in self._state:
+        if self.playlist.title not in self._state:
             self._state[self.playlist.title] = {
                 'id': self.id
             }
@@ -51,7 +51,7 @@ class Vydia(object):
         for Plg in get_plugins():
             plugin = Plg()
             playlist = plugin.extract_playlist(_id)
-            if not playlist is None:
+            if playlist is not None:
                 self.footer_info('Loaded playlist with {}'.format(Plg.__name__))
                 return playlist
         raise RuntimeError('Playlist could not be loaded')
@@ -84,7 +84,7 @@ class Vydia(object):
         t.start()
 
     def handle_mpv_pos(self, pos):
-        if not pos is None:
+        if pos is not None:
             self.ts = int(pos)
             self.footer_info('Playing ({})'.format(sec2ts(self.ts)))
 
@@ -133,7 +133,7 @@ class Vydia(object):
                 self.play_video(vid, ts2sec(_cur['timestamp']))
 
     def onVideoEnd(self, play_next=False):
-        if not self.current_vid is None:
+        if self.current_vid is not None:
             self._state[self.playlist.title].update({
                 'current': {
                     'title': self.current_vid.title,

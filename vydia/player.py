@@ -34,7 +34,7 @@ class Player(object):
 
 if __name__ == '__main__':
     def _print_time(time):
-        if not time is None:
+        if time is not None:
             print('[\033[93m{:06.2f}\033[0m]'.format(time), flush=True)
 
     def _print_event(ev):
