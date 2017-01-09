@@ -10,15 +10,13 @@ import datetime
 import threading
 import collections
 
-from interface import App
+from interface import IntroScreen, App
 from player import Player
 
 
-def load_state():
+def load_state(fname='state.json'):
     """ Load state
     """
-    fname = 'state.json'
-
     if not os.path.isfile(fname):
         res = {}
     else:
@@ -27,9 +25,7 @@ def load_state():
 
     return collections.defaultdict(dict, res)
 
-def save_state(state):
-    fname = 'state.json'
-
+def save_state(state, fname='state.json'):
     with open(fname, 'w') as fd:
         json.dump(state, fd)
 
@@ -65,6 +61,20 @@ class Vydia(object):
             self.handle_mpv_event)
         self._state = load_state()
 
+        if not self.playlist.title in self._state:
+            self._state[self.playlist.title] = {
+                'id': _id
+            }
+            save_state(self._state)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.onVideoEnd()
+        save_state(self._state)
+        del self.mpv
+
     def load_playlist(self, _id):
         for Plg in get_plugins():
             plugin = Plg()
@@ -78,6 +88,7 @@ class Vydia(object):
         self.app = App(
             self.playlist.title, [vid.title for vid in self.playlist],
             self.onSelect, self.onKey)
+        self.app.init_app()
 
         self.assemble_info_box()
         self.app.run()
@@ -101,22 +112,20 @@ class Vydia(object):
         if ev['event_id'] == 7: # end-file
             reason = ev['event']['reason']
             if reason == 0: # graceful shutdown
-                self.onVideoEnd(
-                    self.current_vid.title, self.ts,
-                    play_next=True)
+                self.onVideoEnd(play_next=True)
             elif reason == 2: # force quit
                 self.footer_info('Waiting for input')
-                self.onVideoEnd(
-                    self.current_vid.title, self.ts)
+                self.onVideoEnd()
 
     def footer_info(self, msg):
         self.app.info_bar.set_text(msg)
+        #if self.app.loop._started:
         self.app.loop.draw_screen()
 
     def assemble_info_box(self):
         wid = self.app.info_box.base_widget
 
-        if self.playlist.title in self._state:
+        if 'current' in self._state[self.playlist.title]:
             cur = self._state[self.playlist.title]['current']
 
             wid.set_text('Resume: {} ({})'.format(
@@ -141,35 +150,51 @@ class Vydia(object):
 
                 self.play_video(vid, ts2sec(_cur['timestamp']))
 
-    def onVideoEnd(self, title, ts, play_next=False):
-        self._state[self.playlist.title] = {
-            'current': {
-                'title': title,
-                'timestamp': sec2ts(ts)
-            }
-        }
+    def onVideoEnd(self, play_next=False):
+        if not self.current_vid is None:
+            self._state[self.playlist.title].update({
+                'current': {
+                    'title': self.current_vid.title,
+                    'timestamp': sec2ts(self.ts)
+                }
+            })
 
         save_state(self._state)
         self.assemble_info_box()
 
         if play_next:
             vid = self.get_next_video()
-            self.footer_info('Autoplay next video in playlist ({})'.format(vid.title))
-            self.play_video(vid)
+            if vid is None:
+                self.footer_info('Reached end of playlist')
+            else:
+                self.footer_info('Autoplay next video in playlist ({})'.format(vid.title))
+                self.play_video(vid)
 
     def get_next_video(self):
         idx, _ = self.playlist.get_video_by_title(self.current_vid.title)
-        return self.playlist._videos[idx+1]
+        next_idx = idx + 1
+
+        if next_idx < len(self.playlist._videos):
+            return self.playlist._videos[next_idx]
+        else:
+            return None
 
 def main():
     """ Main interface
     """
-    if len(sys.argv) != 2:
-        print('Usage: {} <playlist id>'.format(sys.argv[0]))
-        exit(-1)
+    def button(playlist_id):
+        with Vydia(playlist_id) as vyd:
+            vyd.run()
 
-    vyd = Vydia(sys.argv[1])
-    vyd.run()
+    def selection(playlist_name):
+        button(load_state()[playlist_name]['id'])
+
+    playlists = sorted(load_state().keys())
+
+    intro = IntroScreen(
+        'Existing playlists', playlists,
+        onSelect=selection, onButton=button)
+    intro.run()
 
 if __name__ == '__main__':
     main()
