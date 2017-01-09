@@ -83,7 +83,7 @@ class Vydia(object):
             save_state(self._state)
 
         self.app.set_title(self.playlist.title)
-        self.app.set_items([vid.title for vid in self.playlist])
+        self.app.set_items(['{} ({})'.format(vid.title, time.strftime("%H:%M:%S", time.gmtime(vid.duration))) for vid in self.playlist])
         self.assemble_info_box()
 
     def load_playlist(self, _id):
@@ -148,8 +148,10 @@ class Vydia(object):
             self.app.loop.draw_screen()
 
     def onSelect(self, title):
-        self.footer_info('Loading video ({})'.format(title))
-        self.play_video(self.playlist.get_video_by_title(title)[1])
+        clean_title = title[:-11] # remove length annotation
+
+        self.footer_info('Loading video ({})'.format(clean_title))
+        self.play_video(self.playlist.get_video_by_title(clean_title)[1])
 
     def onKey(self, key):
         if key in ['C', 'c']:

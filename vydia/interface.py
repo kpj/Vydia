@@ -104,10 +104,12 @@ class App(BaseView):
         self.set_items(self.items)
 
     def set_title(self, title):
-        self.title_widget.set_text(title)
+        self.title = title
+        self.title_widget.set_text(self.title)
 
     def set_items(self, items):
-        for it in items:
+        self.items = items
+        for it in self.items:
             button = urwid.Button(it)
             urwid.connect_signal(button, 'click', self.select, it)
             self.vid_list.append(

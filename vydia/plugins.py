@@ -20,6 +20,10 @@ class Video(object):
         return self._obj.title
 
     @property
+    def duration(self):
+        return self._obj.length
+
+    @property
     def stream(self):
         return self._obj.getbest().url
 
