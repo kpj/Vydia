@@ -79,28 +79,39 @@ class App(BaseView):
         self.info_box = None
         self.info_bar = None
 
+        self.title_widget = None
+
         super().__init__(title, items, onSelect, onKey)
 
     def init_app(self):
-        body = []
-        for it in self.items:
-            button = urwid.Button(it)
-            urwid.connect_signal(button, 'click', self.select, it)
-            body.append(
-                urwid.AttrMap(button, None, focus_map='reversed'))
+        self.vid_list = urwid.SimpleFocusListWalker([])
+        self.info_box = urwid.LineBox(urwid.Text('Nothing to show...'))
 
-        vid_list = urwid.ListBox(urwid.SimpleFocusListWalker(body))
-        self.info_box = urwid.LineBox(urwid.Text('INFO'))
-
-        main = urwid.Frame(vid_list, footer=self.info_box)
+        main = urwid.Frame(urwid.ListBox(self.vid_list), footer=self.info_box)
         self.info_bar = urwid.Text('[Help] q: quit, c: continue last video')
+
+        self.title_widget = urwid.Text('')
 
         self.loop = urwid.MainLoop(
             urwid.Frame(main,
-                header=urwid.Text(self.title),
+                header=self.title_widget,
                 footer=self.info_bar),
             palette=[('reversed', 'standout', '')],
             unhandled_input=self.unhandled_input)
+
+        # fill with data
+        self.set_title(self.title)
+        self.set_items(self.items)
+
+    def set_title(self, title):
+        self.title_widget.set_text(title)
+
+    def set_items(self, items):
+        for it in items:
+            button = urwid.Button(it)
+            urwid.connect_signal(button, 'click', self.select, it)
+            self.vid_list.append(
+                urwid.AttrMap(button, None, focus_map='reversed'))
 
 def main():
     intro = IntroScreen('Intro', ['foo', 'bar'])

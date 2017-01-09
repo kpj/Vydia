@@ -51,7 +51,9 @@ def sec2ts(sec):
 
 class Vydia(object):
     def __init__(self, _id):
-        self.playlist = self.load_playlist(_id)
+        self.id = _id
+
+        self.playlist = None
         self.app = None
         self.ts = None
         self.current_vid = None
@@ -61,12 +63,6 @@ class Vydia(object):
             self.handle_mpv_event)
         self._state = load_state()
 
-        if not self.playlist.title in self._state:
-            self._state[self.playlist.title] = {
-                'id': _id
-            }
-            save_state(self._state)
-
     def __enter__(self):
         return self
 
@@ -75,22 +71,37 @@ class Vydia(object):
         save_state(self._state)
         del self.mpv
 
+    def initial_loading(self):
+        time.sleep(.1) # horrible, but how else?
+        self.footer_info('Loading...')
+
+        self.playlist = self.load_playlist(self.id)
+        if not self.playlist.title in self._state:
+            self._state[self.playlist.title] = {
+                'id': self.id
+            }
+            save_state(self._state)
+
+        self.app.set_title(self.playlist.title)
+        self.app.set_items([vid.title for vid in self.playlist])
+        self.assemble_info_box()
+
     def load_playlist(self, _id):
         for Plg in get_plugins():
             plugin = Plg()
             playlist = plugin.extract_playlist(_id)
             if not playlist is None:
-                print('Loaded playlist with {}'.format(Plg.__name__))
+                self.footer_info('Loaded playlist with {}'.format(Plg.__name__))
                 return playlist
         raise RuntimeError('Playlist could not be loaded')
 
     def run(self):
         self.app = App(
-            self.playlist.title, [vid.title for vid in self.playlist],
+            'Loading...', [],
             self.onSelect, self.onKey)
-        self.app.init_app()
 
-        self.assemble_info_box()
+        self.app.init_app()
+        threading.Thread(target=self.initial_loading).start()
         self.app.run()
 
     def play_video(self, vid, start_pos=0):
