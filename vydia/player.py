@@ -7,7 +7,7 @@ class Player(object):
     def __init__(self, time_callback, event_callback):
         self.mpv = mpv.MPV(
             'force-window',
-            'input-default-bindings', 'input-vo-keyboard',
+            input_default_bindings=True, input_vo_keyboard=True,
             ytdl=True)
 
         self.mpv.observe_property('time-pos', time_callback)
