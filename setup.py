@@ -29,7 +29,7 @@ setup(
     keywords='vydia video playback',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['pafy', 'urwid', 'mpv>=0.1'],
+    install_requires=['appdirs', 'pafy', 'urwid', 'mpv>=0.1'],
     dependency_links=['https://github.com/jaseg/python-mpv/tarball/master#egg=mpv-0.1'],
 
     entry_points={

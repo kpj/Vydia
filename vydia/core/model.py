@@ -9,11 +9,11 @@ from typing import Union, Optional, Iterable
 
 
 class Model:
-    def __init__(self) -> None:
+    def __init__(self, conf_fname=None, log_fname=None) -> None:
         self.adirs = AppDirs('vydia', 'kpj')
 
-        self.CONFIG_FILE: Path = Path(self.adirs.user_config_dir) / 'state.json'
-        self.LOG_FILE: Path = Path(self.adirs.user_log_dir) / 'log.txt'
+        self.CONFIG_FILE: Path = conf_fname or Path(self.adirs.user_config_dir) / 'state.json'
+        self.LOG_FILE: Path = log_fname or Path(self.adirs.user_log_dir) / 'log.txt'
 
         self._ensure_dir(str(self.LOG_FILE))
 
