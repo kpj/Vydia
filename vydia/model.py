@@ -10,8 +10,12 @@ from typing import Union, Optional, Iterable
 
 class Model:
     def __init__(self) -> None:
-        adirs = AppDirs('vydia', 'kpj')
-        self.CONFIG_FILE: Path = Path(adirs.user_config_dir) / 'state.json'
+        self.adirs = AppDirs('vydia', 'kpj')
+
+        self.CONFIG_FILE: Path = Path(self.adirs.user_config_dir) / 'state.json'
+        self.LOG_FILE: Path = Path(self.adirs.user_log_dir) / 'log.txt'
+
+        self._ensure_dir(str(self.LOG_FILE))
 
     def get_playlist_list(self) -> Iterable:
         return sorted(self._load_state().keys())

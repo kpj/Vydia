@@ -26,8 +26,9 @@ class Controller:
             palette=[('reversed', 'standout', '')])
 
         logging.basicConfig(
-            filename='current.log', level=logging.DEBUG,
-            format='[%(module)s|%(funcName)s] - %(message)s')
+            filename=self.model.LOG_FILE, level=logging.DEBUG,
+            format='[%(module)s|%(funcName)s] - %(message)s',
+            filemode='w')
 
     def __enter__(self):
         logging.info(f'Create controller')
