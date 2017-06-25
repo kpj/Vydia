@@ -2,7 +2,7 @@
 Main interface
 """
 
-from .controller import Controller
+from .core.controller import Controller
 
 
 def main():

@@ -8,8 +8,8 @@ from typing import Iterable
 
 from .model import Model
 from .view import View
-from .player import Player
-from .utils import get_plugins, sec2ts, ts2sec
+from ..extra.player import Player
+from ..extra.utils import get_plugins, sec2ts, ts2sec
 
 
 class Controller:
