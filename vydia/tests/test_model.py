@@ -10,7 +10,7 @@ def model(tmpdir):
     cfg = os.path.join(tmpdir, 'state.json')
     log = os.path.join(tmpdir, 'log.txt')
 
-    m = vydia.core.Model(conf_fname=cfg, log_fname=log)
+    m = vydia.core.Model(state_fname=cfg, log_fname=log)
     return m
 
 

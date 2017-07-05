@@ -9,10 +9,10 @@ from typing import Union, Optional, Iterable
 
 
 class Model:
-    def __init__(self, conf_fname=None, log_fname=None) -> None:
+    def __init__(self, state_fname=None, log_fname=None) -> None:
         self.adirs = AppDirs('vydia', 'kpj')
 
-        self.CONFIG_FILE: Path = conf_fname or Path(self.adirs.user_config_dir) / 'state.json'
+        self.STATE_FILE: Path = state_fname or Path(self.adirs.user_data_dir) / 'state.json'
         self.LOG_FILE: Path = log_fname or Path(self.adirs.user_log_dir) / 'log.txt'
 
         self._ensure_dir(str(self.LOG_FILE))
@@ -49,7 +49,7 @@ class Model:
     def _load_state(self, fn: Optional[str] = None) -> dict:
         """ Load state
         """
-        fname = str(fn or self.CONFIG_FILE)
+        fname = str(fn or self.STATE_FILE)
         self._ensure_dir(fname)
 
         if not os.path.isfile(fname):
@@ -61,7 +61,7 @@ class Model:
         return collections.defaultdict(dict, res)
 
     def _save_state(self, state: dict, fn: Optional[str] = None) -> None:
-        fname = str(fn or self.CONFIG_FILE)
+        fname = str(fn or self.STATE_FILE)
         self._ensure_dir(fname)
 
         with open(fname, 'w') as fd:
