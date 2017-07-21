@@ -9,7 +9,7 @@ from typing import Iterable
 from .model import Model
 from .view import View
 from ..extra.player import Player
-from ..extra.utils import get_plugins, sec2ts, ts2sec
+from ..extra.utils import load_playlist, sec2ts, ts2sec
 
 
 class Controller:
@@ -132,7 +132,10 @@ class PlayerQueue:
     def setup(self):
         def tmp():
             self.controller.send_msg('Loading...')
-            self.playlist = self.load_playlist(self.id)
+
+            plugin_name, self.playlist = load_playlist(self.id)
+            self.controller.send_msg(
+                f'Loaded playlist with {plugin_name}')
 
             v = self.controller.view.widget
             v.set_title(self.playlist.title)
@@ -171,16 +174,6 @@ class PlayerQueue:
                 self.controller.send_msg(
                     f'Autoplay next video in playlist ({vid.title})')
                 self.play_video(vid)
-
-    def load_playlist(self, _id):
-        for Plg in get_plugins():
-            plugin = Plg()
-            playlist = plugin.extract_playlist(_id)
-            if playlist is not None:
-                self.controller.send_msg(
-                    f'Loaded playlist with {Plg.__name__}')
-                return playlist
-        raise RuntimeError('Playlist could not be loaded')
 
     def play_video(self, vid, start_pos=0):
         self.current_vid = vid

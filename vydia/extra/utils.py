@@ -35,3 +35,11 @@ def get_video_duration(fname):
 
     dur_str = dur_lines[0].split()[1].split('.')[0]
     return ts2sec(dur_str)
+
+def load_playlist(_id):
+    for Plg in get_plugins():
+        plugin = Plg()
+        playlist = plugin.extract_playlist(_id)
+        if playlist is not None:
+            return (Plg.__name__, playlist)
+    raise ValueError(f'Playlist "{_id}" could not be loaded')
