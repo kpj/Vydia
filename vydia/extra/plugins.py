@@ -2,30 +2,40 @@
 Plugins for video backends
 """
 
+import os
+import collections
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import pafy
 
+from .utils import get_video_duration
+
+
+VideoData = collections.namedtuple(
+    'VideoData', ['title', 'duration', 'get_file_stream'])
 
 class Video(object):
     @classmethod
     def from_pafy(cls, obj):
-        return cls(obj)
+        return cls(VideoData(
+            title=obj.title,
+            duration=obj.length,
+            get_file_stream=lambda: obj.getbest().url
+        ))
+
+    @classmethod
+    def from_filepath(cls, path):
+        return cls(VideoData(
+            title=os.path.basename(path),
+            duration=get_video_duration(path),
+            get_file_stream=lambda: path
+        ))
 
     def __init__(self, obj):
         self._obj = obj
 
-    @property
-    def title(self):
-        return self._obj.title
-
-    @property
-    def duration(self):
-        return self._obj.length
-
-    @property
-    def stream(self):
-        return self._obj.getbest().url
+    def __getattr__(self, key):
+        return self._obj._asdict()[key]
 
 class Playlist(object):
     def __init__(self):
@@ -62,6 +72,23 @@ class BasePlugin(metaclass=ABCMeta):
             None if invalid url
         """
         return
+
+class FilesystemPlugin(BasePlugin):
+    def extract_playlist(self, url):
+        if not os.path.exists(url):
+            return None
+
+        pl = Playlist()
+        pl._title = url
+
+        for entry in os.scandir(url):
+            if entry.is_dir():
+                print(f'Skipping {entry.path}')
+                continue
+
+            pl._videos.append(Video.from_filepath(entry.path))
+
+        return pl
 
 class YoutubePlugin(BasePlugin):
     def extract_playlist(self, url):

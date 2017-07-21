@@ -10,4 +10,5 @@ $ pip install --process-dependency-links vydia
 
 ## Plugins
 
+* Filesystem
 * Youtube

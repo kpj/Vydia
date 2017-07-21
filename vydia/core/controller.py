@@ -186,7 +186,7 @@ class PlayerQueue:
         self.current_vid = vid
 
         def tmp():
-            self.mpv.play_video(vid.stream, start=start_pos)
+            self.mpv.play_video(vid.get_file_stream(), start=start_pos)
             self.mpv.mpv.wait_for_playback()
 
         t = threading.Thread(target=tmp)
