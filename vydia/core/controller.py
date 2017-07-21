@@ -85,20 +85,19 @@ class Controller:
         self.player.setup()
 
     def save_state(self) -> None:
-        logging.info(f'Explicit state save')
+        if self.player is not None:
+            logging.info(f'Explicit state save')
+            assert self.current_playlist is not None
 
-        assert self.player is not None
-        assert self.current_playlist is not None
-
-        # update current video
-        if self.player.current_vid is not None:
-            self.model.update_state(
-                self.current_playlist, {
-                    'current': {
-                        'title': self.player.current_vid.title,
-                        'timestamp': sec2ts(self.player.ts)
-                    }
-                })
+            # update current video
+            if self.player.current_vid is not None:
+                self.model.update_state(
+                    self.current_playlist, {
+                        'current': {
+                            'title': self.player.current_vid.title,
+                            'timestamp': sec2ts(self.player.ts)
+                        }
+                    })
 
     def assemble_info_box(self) -> None:
         logging.info('Assembling info box')
