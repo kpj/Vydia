@@ -81,12 +81,15 @@ class FilesystemPlugin(BasePlugin):
         pl = Playlist()
         pl._title = url
 
+        paths = []
         for entry in os.scandir(url):
             if entry.is_dir():
                 print(f'Skipping {entry.path}')
                 continue
+            paths.append(entry.path)
 
-            pl._videos.append(Video.from_filepath(entry.path))
+        for fp in sorted(paths):
+            pl._videos.append(Video.from_filepath(fp))
 
         return pl
 
