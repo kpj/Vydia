@@ -5,15 +5,21 @@ import collections
 from pathlib import Path
 from appdirs import AppDirs
 
-from typing import Union, Optional, Iterable
+from typing import Union, Optional, Iterable, Dict
 
 
 class Model:
-    def __init__(self, state_fname=None, log_fname=None) -> None:
+    def __init__(
+        self,
+        state_fname: Optional[Path] = None,
+        log_fname: Optional[Path] = None
+    ) -> None:
         self.adirs = AppDirs('vydia', 'kpj')
 
-        self.STATE_FILE: Path = state_fname or Path(self.adirs.user_data_dir) / 'state.json'
-        self.LOG_FILE: Path = log_fname or Path(self.adirs.user_log_dir) / 'log.txt'
+        self.STATE_FILE: Path = state_fname \
+            or Path(self.adirs.user_data_dir) / 'state.json'
+        self.LOG_FILE: Path = log_fname \
+            or Path(self.adirs.user_log_dir) / 'log.txt'
 
         self._ensure_dir(str(self.LOG_FILE))
 
@@ -25,7 +31,7 @@ class Model:
         cur.update({'name': pid})
         return cur
 
-    def get_current_video(self, pid: str):
+    def get_current_video(self, pid: str) -> Dict:
         _state = self._load_state()
         return _state[pid].get('current', None)
 

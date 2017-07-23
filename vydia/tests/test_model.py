@@ -6,7 +6,7 @@ import vydia
 
 
 @pytest.fixture
-def model(tmpdir):
+def model(tmpdir: str) -> vydia.core.Model:
     cfg = os.path.join(tmpdir, 'state.json')
     log = os.path.join(tmpdir, 'log.txt')
 
@@ -14,7 +14,7 @@ def model(tmpdir):
     return m
 
 
-def test_state_update(model):
+def test_state_update(model: vydia.core.Model) -> None:
     assert model._load_state() == {}
 
     model.update_state('pl01', {'id': '123'})

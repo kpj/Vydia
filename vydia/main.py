@@ -2,6 +2,8 @@
 Main interface
 """
 
+from typing import Any
+
 import click
 
 from .core.controller import Controller
@@ -11,14 +13,14 @@ from .extra.utils import load_playlist
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-def main(ctx):
+def main(ctx: Any) -> None:
     if ctx.invoked_subcommand is None:
         with Controller() as c:
             c.main()
 
 @main.command()
 @click.argument('playlist')
-def add_playlist(playlist):
+def add_playlist(playlist: str) -> None:
     try:
         plugin_name, pl = load_playlist(playlist)
     except ValueError:
