@@ -230,7 +230,7 @@ class PlayerQueue:
 
         next_idx = idx + 1
 
-        if next_idx < len(self.playlist._videos):
-            return self.playlist._videos[next_idx]
+        if next_idx < len(self.playlist):
+            return self.playlist[next_idx]
         else:
             return None

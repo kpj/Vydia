@@ -39,32 +39,19 @@ class Video(object):
     def __getattr__(self, key: str) -> Any:
         return self._obj._asdict()[key]
 
-class Playlist(object):
+class Playlist(list):
     def __init__(self) -> None:
         self._title = ''
-        self._videos: List[Video] = []
-
-        self.vid_idx = 0 # TODO: handle in self.__iter__
+        super().__init__()
 
     @property
     def title(self) -> str:
         return self._title
 
-    def __iter__(self) -> 'Playlist':
-        self.vid_idx = 0
-        return self
-
-    def __next__(self) -> Video:
-        if self.vid_idx >= len(self._videos):
-            raise StopIteration
-        else:
-            self.vid_idx += 1
-            return self._videos[self.vid_idx-1]
-
     def get_video_by_title(
         self, title: str
     ) -> Tuple[Optional[int], Optional[Video]]:
-        for i, vid in enumerate(self._videos):
+        for i, vid in enumerate(self):
             if vid.title == title:
                 return i, vid
         return None, None
@@ -92,7 +79,7 @@ class FilesystemPlugin(BasePlugin):
             paths.append(entry.path)
 
         for fp in sorted(paths):
-            pl._videos.append(Video.from_filepath(fp))
+            pl.append(Video.from_filepath(fp))
 
         return pl
 
@@ -106,7 +93,7 @@ class YoutubePlugin(BasePlugin):
 
         pl._title = res.title
         for vid in res:
-            pl._videos.append(Video.from_pafy(vid))
+            pl.append(Video.from_pafy(vid))
 
         return pl
 
