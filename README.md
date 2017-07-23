@@ -5,7 +5,7 @@ A modularized video player written in Python.
 ## Installation
 
 ```bash
-$ pip install --process-dependency-links vydia
+$ pip install vydia
 ```
 
 ## Plugins

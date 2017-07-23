@@ -146,7 +146,7 @@ class PlayerQueue:
         t = threading.Thread(target=tmp)
         t.start()
 
-    def handle_mpv_pos(self, pos):
+    def handle_mpv_pos(self, prop_name, pos):
         if pos is not None:
             self.ts = int(pos)
             self.controller.send_msg(

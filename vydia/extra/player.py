@@ -33,7 +33,7 @@ class Player(object):
 
 
 if __name__ == '__main__':
-    def _print_time(time):
+    def _print_time(prop_name, time):
         if time is not None:
             print('[\033[93m{:06.2f}\033[0m]'.format(time), flush=True)
 
