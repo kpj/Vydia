@@ -38,6 +38,11 @@ class Player(object):
         """
         self.mpv.wait_for_property('filename', lambda x: x is None)
 
+    def stop(self) -> None:
+        """ Close player
+        """
+        self.mpv.terminate()
+
 
 if __name__ == '__main__':
     def _print_time(prop_name: str, time: float) -> None:

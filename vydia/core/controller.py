@@ -41,6 +41,8 @@ class Controller:
         self, exc_type: Any, exc_value: Any, traceback: Any
     ) -> None:
         self.save_state()
+        if self.player is not None:
+            self.player.mpv.stop()
         logging.info(f'Destroy controller')
 
     def main(self) -> None:
