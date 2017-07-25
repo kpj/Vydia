@@ -27,9 +27,10 @@ class Player(object):
         mode = 'replace' if plc == 0 else 'append-play'
         self.mpv.loadfile(vid, mode=mode)
 
-    def play_video(self, vid: str, start: int = 0) -> None:
+    def play_video(self, title: str, vid: str, start: int = 0) -> None:
         #self.mpv.command('stop')
         self.mpv.playlist_clear()
+        self.mpv['title'] = title
         self.mpv.loadfile(vid, start=start)
 
     def join(self) -> None:
