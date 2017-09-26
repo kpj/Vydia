@@ -5,7 +5,7 @@ import collections
 from pathlib import Path
 from appdirs import AppDirs
 
-from typing import Union, Optional, Iterable, Dict
+from typing import Any, Union, Optional, Iterable, Dict
 
 
 class Model:
@@ -23,19 +23,19 @@ class Model:
 
         self._ensure_dir(str(self.LOG_FILE))
 
-    def get_playlist_list(self) -> Iterable:
+    def get_playlist_list(self) -> Iterable[str]:
         return sorted(self._load_state().keys())
 
-    def get_playlist_info(self, pid: str) -> dict:
+    def get_playlist_info(self, pid: str) -> Dict[str, str]:
         cur = self._load_state()[pid]
         cur.update({'name': pid})
         return cur
 
-    def get_current_video(self, pid: str) -> Dict:
+    def get_current_video(self, pid: str) -> Dict[str, str]:
         _state = self._load_state()
         return _state[pid].get('current', None)
 
-    def update_state(self, pid: str, data: dict) -> None:
+    def update_state(self, pid: str, data: Dict[str, str]) -> None:
         _state = self._load_state()
 
         if pid in _state:
@@ -52,21 +52,24 @@ class Model:
         if not os.path.isdir(dir_):
             os.makedirs(dir_)
 
-    def _load_state(self, fn: Optional[str] = None) -> dict:
+    def _load_state(self, fn: Optional[str] = None) -> Dict[Any, Any]:
         """ Load state
         """
         fname = str(fn or self.STATE_FILE)
         self._ensure_dir(fname)
 
         if not os.path.isfile(fname):
-            res: dict = {}
+            res: Dict[Any, Any] = {}
         else:
             with open(fname) as fd:
                 res = json.load(fd)
 
         return collections.defaultdict(dict, res)
 
-    def _save_state(self, state: dict, fn: Optional[str] = None) -> None:
+    def _save_state(
+        self,
+        state: Dict[Any, Any], fn: Optional[str] = None
+    ) -> None:
         fname = str(fn or self.STATE_FILE)
         self._ensure_dir(fname)
 

@@ -6,7 +6,7 @@ import os
 import collections
 from abc import ABCMeta, abstractmethod, abstractproperty
 
-from typing import Any, List, Tuple, Optional, Type
+from typing import Any, List, Tuple, Optional, Type, Callable
 
 import pafy
 
@@ -14,7 +14,8 @@ from .utils import get_video_duration
 
 
 VideoData = collections.namedtuple(
-    'VideoData', ['title', 'duration', 'get_file_stream'])
+    'VideoData', ['title', 'duration', 'get_file_stream']
+)  # type: Tuple[str, int, Callable[[], str]]
 
 class Video(object):
     @classmethod
@@ -39,7 +40,7 @@ class Video(object):
     def __getattr__(self, key: str) -> Any:
         return self._obj._asdict()[key]
 
-class Playlist(list):
+class Playlist(List['Video']):
     def __init__(self) -> None:
         self._title = ''
         super().__init__()

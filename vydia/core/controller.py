@@ -7,7 +7,7 @@ import urwid
 import logzero
 from logzero import logger
 
-from typing import Any, Iterable, Optional, TYPE_CHECKING
+from typing import Any, Iterable, Optional, Dict, TYPE_CHECKING
 
 from .model import Model
 from .view import View
@@ -82,10 +82,10 @@ class Controller:
         else:
             raise RuntimeError(f'Could not find video "{clean_title}"')
 
-    def get_playlist_list(self) -> Iterable:
+    def get_playlist_list(self) -> Iterable[str]:
         return self.model.get_playlist_list()
 
-    def get_current_playlist_info(self) -> dict:
+    def get_current_playlist_info(self) -> Dict[str, str]:
         if self.current_playlist is None:
             raise RuntimeError('Current playlist is not set')
 
