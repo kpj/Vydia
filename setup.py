@@ -29,7 +29,9 @@ setup(
     keywords='vydia video playback',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['appdirs', 'pafy', 'urwid', 'click', 'python-mpv'],
+    install_requires=[
+        'appdirs', 'pafy', 'urwid', 'click', 'python-mpv', 'logzero'
+    ],
 
     entry_points={
         'console_scripts': [

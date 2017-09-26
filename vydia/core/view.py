@@ -1,9 +1,9 @@
-import logging
 from abc import ABC, abstractmethod
 
 from typing import Iterable, TYPE_CHECKING
 
 import urwid
+from logzero import logger
 
 if TYPE_CHECKING:
     from .controller import Controller
@@ -116,7 +116,7 @@ class EpisodeOverview(BaseView):
         if isinstance(key, str) and key.lower() == 'c':
             self.controller.continue_playback()
         else:
-            logging.info(f'Unknown key "{key}"')
+            logger.info(f'Unknown key "{key}"')
 
     def set_title(self, title: str) -> None:
         self.title = title

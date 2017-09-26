@@ -4,6 +4,9 @@ import threading
 
 import urwid
 
+import logzero
+from logzero import logger
+
 from typing import Any, Iterable, Optional, TYPE_CHECKING
 
 from .model import Model
@@ -28,13 +31,13 @@ class Controller:
             self.view, unhandled_input=self._unhandled_input,
             palette=[('reversed', 'standout', '')])
 
-        logging.basicConfig(
-            filename=str(self.model.LOG_FILE), level=logging.DEBUG,
-            format='[%(module)s|%(funcName)s] - %(message)s',
-            filemode='w')
+        logzero.loglevel(logging.ERROR)
+        logzero.logfile(
+            self.model.LOG_FILE,
+            maxBytes=1e6, backupCount=3, loglevel=logging.ERROR)
 
     def __enter__(self) -> 'Controller':
-        logging.info(f'Create controller')
+        logger.info(f'Create controller')
         return self
 
     def __exit__(
@@ -43,7 +46,7 @@ class Controller:
         self.save_state()
         if self.player is not None:
             self.player.mpv.stop()
-        logging.info(f'Destroy controller')
+        logger.info(f'Destroy controller')
 
     def main(self) -> None:
         self.view.show_playlist_overview()
@@ -58,7 +61,7 @@ class Controller:
 
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id
-        logging.info(f'Selected playlist {self.current_playlist}')
+        logger.info(f'Selected playlist {self.current_playlist}')
 
         self.view.show_episode_overview()
         self._init_player()
@@ -70,7 +73,7 @@ class Controller:
             raise RuntimeError('Player\'s playlist was not instantiated')
 
         clean_title = video_id[:-11]  # remove length annotation
-        logging.info(f'Selected video {clean_title}')
+        logger.info(f'Selected video {clean_title}')
 
         self.send_msg(f'Loading video ({clean_title})')
         vid = self.player.playlist.get_video_by_title(clean_title)[1]
@@ -95,7 +98,7 @@ class Controller:
             raise RuntimeError('Player\'s playlist was not instantiated')
         if self.current_playlist is None:
             raise RuntimeError('Current playlist is not set')
-        logging.info(f'Continue playback')
+        logger.info(f'Continue playback')
 
         _cur = self.model.get_current_video(self.current_playlist)
 
@@ -113,7 +116,7 @@ class Controller:
 
     def save_state(self) -> None:
         if self.player is not None:
-            logging.info(f'Explicit state save')
+            logger.info(f'Explicit state save')
             assert self.current_playlist is not None
             assert self.player.ts is not None
 
@@ -131,7 +134,7 @@ class Controller:
         if self.current_playlist is None:
             raise RuntimeError('Current playlist is not set')
 
-        logging.info('Assembling info box')
+        logger.info('Assembling info box')
         _cur = self.model.get_current_video(self.current_playlist)
 
         if _cur is not None:
