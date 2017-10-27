@@ -125,6 +125,8 @@ class EpisodeOverview(BaseView):
         self.controller.loop.draw_screen()
 
     def set_items(self, items: Iterable[str]) -> None:
+        self.vid_list.clear()
+
         self.items = items
         for it in self.items:
             button = urwid.Button(it)

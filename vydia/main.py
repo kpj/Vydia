@@ -27,7 +27,7 @@ def add_playlist(playlist: str) -> None:
         print(f'No plugin found for "{playlist}"')
         return
 
-    Model().update_state(pl.title, {'id': playlist})
+    Model().update_state(pl.title, {'id': playlist, 'episodes': {}})
     print(f'Added "{pl.title}" using {plugin_name}')
 
 if __name__ == '__main__':

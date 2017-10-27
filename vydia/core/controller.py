@@ -66,21 +66,23 @@ class Controller:
         self.view.show_episode_overview()
         self._init_player()
 
-    def on_video_selected(self, video_id: str) -> None:
+    def on_video_selected(self, video_display_name: str) -> None:
         if self.player is None:
             raise RuntimeError('Player was not instantiated')
         if self.player.playlist is None:
             raise RuntimeError('Player\'s playlist was not instantiated')
 
-        clean_title = video_id[:-11]  # remove length annotation
-        logger.info(f'Selected video {clean_title}')
+        video_index = self.player.item_list.index(
+            video_display_name)
 
-        self.send_msg(f'Loading video ({clean_title})')
-        vid = self.player.playlist.get_video_by_title(clean_title)[1]
+        vid = self.player.playlist[video_index]
+        logger.info(f'Selected video {vid.title}')
+
+        self.send_msg(f'Loading video ({vid.title})')
         if vid is not None:
             self.player.play_video(vid)
         else:
-            raise RuntimeError(f'Could not find video "{clean_title}"')
+            raise RuntimeError(f'Could not find video "{vid.title}"')
 
     def get_playlist_list(self) -> Iterable[str]:
         return self.model.get_playlist_list()
@@ -130,6 +132,15 @@ class Controller:
                         }
                     })
 
+                self.model.update_state(
+                    self.current_playlist, {
+                        'episodes': {
+                            self.player.current_vid.title: {
+                                'current_timestamp': sec2ts(self.player.ts)
+                            }
+                        }
+                    })
+
     def assemble_info_box(self) -> None:
         if self.current_playlist is None:
             raise RuntimeError('Current playlist is not set')
@@ -163,6 +174,7 @@ class PlayerQueue:
         self.playlist = None  # type: Optional['Playlist']
         self.current_vid = None  # type: Optional['Video']
         self.ts = None  # type: Optional[int]
+        self.item_list = None  # type: Optional[List[str]]
 
     def setup(self) -> None:
         def tmp() -> None:
@@ -172,11 +184,27 @@ class PlayerQueue:
             self.controller.send_msg(
                 f'Loaded playlist with {plugin_name}')
 
+            state = self.controller.model._load_state()
+            playlist_state = state[self.controller.current_playlist]
+
+            self.item_list = []
+            for vid in self.playlist:
+                vid_tit = vid.title
+                vid_len = vid.duration
+
+                if vid_tit in playlist_state['episodes']:
+                    vid_info = playlist_state['episodes'][vid_tit]
+                    vid_ts = ts2sec(vid_info['current_timestamp'])
+                else:
+                    vid_ts = 0
+                vid_perc = int((vid_ts / vid_len) * 100)
+
+                cur = f'{vid_tit} ({sec2ts(vid_len)}, {vid_perc}% watched)'
+                self.item_list.append(cur)
+
             v = self.controller.view.widget
             v.set_title(self.playlist.title)
-            v.set_items(
-                ['{} ({})'.format(vid.title, sec2ts(vid.duration))
-                    for vid in self.playlist])
+            v.set_items(self.item_list)
             self.controller.assemble_info_box()
 
         t = threading.Thread(target=tmp)
@@ -213,6 +241,8 @@ class PlayerQueue:
                 self.controller.send_msg(
                     f'Autoplay next video in playlist ({vid.title})')
                 self.play_video(vid)
+
+        self.setup()
 
     def play_video(self, vid: 'Video', start_pos: int = 0) -> None:
         self.current_vid = vid

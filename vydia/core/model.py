@@ -5,7 +5,9 @@ import collections
 from pathlib import Path
 from appdirs import AppDirs
 
-from typing import Any, Union, Optional, Iterable, Dict
+from typing import Any, Union, Optional, Iterable, Dict, List
+
+from ..extra.utils import nested_dict_update
 
 
 class Model:
@@ -35,11 +37,14 @@ class Model:
         _state = self._load_state()
         return _state[pid].get('current', None)
 
-    def update_state(self, pid: str, data: Dict[str, str]) -> None:
+    def update_state(
+        self,
+        pid: str, data: Dict[str, str]
+    ) -> None:
         _state = self._load_state()
 
         if pid in _state:
-            _state[pid].update(data)
+            _state[pid] = nested_dict_update(_state[pid], data)
         else:
             _state[pid] = data
 

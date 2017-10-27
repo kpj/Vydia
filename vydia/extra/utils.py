@@ -6,7 +6,7 @@ import time
 import datetime
 import subprocess
 
-from typing import Iterable, Type, Tuple, TYPE_CHECKING
+from typing import Iterable, Type, Tuple, Dict, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .plugins import BasePlugin, Playlist
@@ -49,3 +49,19 @@ def load_playlist(_id: str) -> Tuple[str, 'Playlist']:
         if playlist is not None:
             return (Plg.__name__, playlist)
     raise ValueError(f'Playlist "{_id}" could not be loaded')
+
+def nested_dict_update(
+    cur_dict: Dict[Any, Any],
+    update_data: Dict[Any, Any]
+) -> Dict[Any, Any]:
+    for k, v in update_data.items():
+        if isinstance(v, dict):
+            old_val = cur_dict.get(k, {})
+            if isinstance(old_val, dict):
+                r = nested_dict_update(old_val, v)
+            else:
+                r = v
+            cur_dict[k] = r
+        else:
+            cur_dict[k] = update_data[k]
+    return cur_dict

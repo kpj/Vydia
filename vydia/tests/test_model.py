@@ -27,3 +27,7 @@ def test_state_update(model: vydia.core.Model) -> None:
     model.update_state('pl01', {'id': '___', 'foo': 42})
     assert model._load_state() == {
         'pl01': {'id': '___', 'foo': 42}, 'pl02': {'id': 'ABC'}}
+
+    model.update_state('pl01', {'id': 'qux', 'foo': {'bar': 42, 'baz': 13}})
+    assert model._load_state() == {
+        'pl01': {'id': 'qux', 'foo': {'bar': 42, 'baz': 13}}, 'pl02': {'id': 'ABC'}}
