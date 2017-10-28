@@ -197,7 +197,7 @@ class PlayerQueue:
                     vid_ts = ts2sec(vid_info['current_timestamp'])
                 else:
                     vid_ts = 0
-                vid_perc = int((vid_ts / vid_len) * 100)
+                vid_perc = round((vid_ts / vid_len) * 100)
 
                 cur = f'{vid_tit} ({sec2ts(vid_len)}, {vid_perc}% watched)'
                 self.item_list.append(cur)
