@@ -176,13 +176,16 @@ class PlayerQueue:
         self.ts = None  # type: Optional[int]
         self.item_list = None  # type: Optional[List[str]]
 
-    def setup(self) -> None:
+    def setup(self, reload_playlist=True) -> None:
         def tmp() -> None:
-            self.controller.send_msg('Loading...')
+            if reload_playlist:
+                self.controller.send_msg('Loading...')
 
-            plugin_name, self.playlist = load_playlist(self.id)
-            self.controller.send_msg(
-                f'Loaded playlist with {plugin_name}')
+                plugin_name, self.playlist = load_playlist(self.id)
+                self.controller.send_msg(
+                    f'Loaded playlist with {plugin_name}')
+            else:
+                assert self.playlist is not None, 'Playlist has not been loaded'
 
             state = self.controller.model._load_state()
             playlist_state = state[self.controller.current_playlist]
@@ -242,7 +245,7 @@ class PlayerQueue:
                     f'Autoplay next video in playlist ({vid.title})')
                 self.play_video(vid)
 
-        self.setup()
+        self.setup(reload_playlist=False)
 
     def play_video(self, vid: 'Video', start_pos: int = 0) -> None:
         self.current_vid = vid
