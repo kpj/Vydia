@@ -7,7 +7,7 @@ import urwid
 import logzero
 from logzero import logger
 
-from typing import Any, Iterable, Optional, Dict, TYPE_CHECKING
+from typing import Any, Iterable, Optional, Dict, List, TYPE_CHECKING
 
 from .model import Model
 from .view import View
@@ -69,7 +69,7 @@ class Controller:
     def on_video_selected(self, video_display_name: str) -> None:
         if self.player is None:
             raise RuntimeError('Player was not instantiated')
-        if self.player.playlist is None:
+        if self.player.playlist is None or self.player.item_list is None:
             raise RuntimeError('Player\'s playlist was not instantiated')
 
         video_index = self.player.item_list.index(

@@ -39,7 +39,7 @@ class Model:
 
     def update_state(
         self,
-        pid: str, data: Dict[str, str]
+        pid: str, data: Dict[str, Any]
     ) -> None:
         _state = self._load_state()
 

@@ -19,7 +19,10 @@ class Player(object):
         self.mpv.observe_property('time-pos', time_callback)
         self.mpv.register_event_callback(event_callback)
 
-        for key in ('q', 'Q', 'POWER', 'STOP', 'CLOSE_WIN', 'Ctrl+c', 'AR_PLAY_HOLD', 'AR_CENTER_HOLD'):
+        stop_keys = (
+            'q', 'Q', 'POWER', 'STOP', 'CLOSE_WIN',
+            'Ctrl+c', 'AR_PLAY_HOLD', 'AR_CENTER_HOLD')
+        for key in stop_keys:
             self.mpv.register_key_binding(key, 'stop')
 
     def queue_video(self, vid: str) -> None:
