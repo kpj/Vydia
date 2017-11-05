@@ -56,6 +56,9 @@ class Controller:
         if key in ('Q', 'q', 'esc'):
             raise urwid.ExitMainLoop()
 
+        if key == ':':
+            self.view.show_cmdline()
+            return
 
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id
@@ -155,6 +158,10 @@ class Controller:
 
     def send_msg(self, msg: str) -> None:
         self.view.widget.update_info_text(msg)
+
+    def handle_cmdline_input(self, msg: str) -> None:
+        if msg.lower() in ('q', 'quit'):
+            raise urwid.ExitMainLoop()
 
 
 class PlayerQueue:

@@ -30,7 +30,8 @@ setup(
     packages=find_packages(exclude=['tests']),
 
     install_requires=[
-        'appdirs', 'pafy', 'urwid', 'click', 'python-mpv', 'logzero'
+        'appdirs', 'pafy', 'urwid', 'urwid_readline',
+        'click', 'python-mpv', 'logzero'
     ],
 
     entry_points={

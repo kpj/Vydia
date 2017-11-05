@@ -3,18 +3,20 @@ from abc import ABC, abstractmethod
 from typing import Optional, Iterable, Tuple, Any, TYPE_CHECKING
 
 import urwid
+import urwid_readline
+
 from logzero import logger
 
 if TYPE_CHECKING:
     from .controller import Controller
 
 
-class View(urwid.WidgetWrap):
+class View(urwid.Frame):
     def __init__(self, controller: 'Controller') -> None:
         self.controller = controller
         self.widget = None  # type: Optional[urwid.WidgetWrap]
 
-        urwid.WidgetWrap.__init__(self, self.intro_screen())
+        urwid.Frame.__init__(self, self.intro_screen())
 
     def _activate_widget(self, w: urwid.WidgetWrap) -> None:
         self.widget = w
@@ -32,6 +34,35 @@ class View(urwid.WidgetWrap):
         w = EpisodeOverview(self.controller)
         self._activate_widget(w)
 
+    def show_cmdline(self) -> None:
+        def return_callback(key: str) -> None:
+            self.controller.handle_cmdline_input(key)
+            self.hide_cmdline()
+        cmdline = CmdlineView(
+            caption=':', callback=return_callback)
+
+        self.contents.update(footer=(cmdline, None))
+        self.focus_position = 'footer'
+
+    def hide_cmdline(self) -> None:
+        self.contents.update(footer=(None, None))
+        self.focus_position = 'body'
+
+class CmdlineView(urwid_readline.ReadlineEdit):
+    def __init__(
+        self, *args: Any,
+        callback: Any = None, **kwargs: Any
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self._callback = callback
+
+    def keypress(self, size: Tuple[int, int], key: str) -> None:
+        if key == 'enter':
+            urwid.emit_signal(self, 'done', self, self.get_edit_text())
+            return self._callback(self.edit_text) \
+                if self._callback is not None else None
+
+        super().keypress(size, key)
 
 class BaseView(ABC):
     def __init__(self, title: str, items: Iterable[str]) -> None:
@@ -116,7 +147,8 @@ class EpisodeOverview(BaseView):
 
     def handle_input(self, key: str) -> Optional[str]:
         if isinstance(key, str) and key.lower() == 'c':
-            return self.controller.continue_playback()
+            self.controller.continue_playback()
+            return None
         else:
             return key
 
