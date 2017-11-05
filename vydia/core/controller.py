@@ -176,7 +176,7 @@ class PlayerQueue:
         self.ts = None  # type: Optional[int]
         self.item_list = None  # type: Optional[List[str]]
 
-    def setup(self, reload_playlist=True) -> None:
+    def setup(self, reload_playlist: bool = True) -> None:
         def tmp() -> None:
             if reload_playlist:
                 self.controller.send_msg('Loading...')
