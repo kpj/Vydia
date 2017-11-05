@@ -49,6 +49,12 @@ class Playlist(List['Video']):
     def title(self) -> str:
         return self._title
 
+    def reverse(self) -> None:
+        tmp = self[:]
+        self.clear()
+        for v in reversed(tmp):
+            self.append(v)
+
     def get_video_by_title(
         self, title: str
     ) -> Tuple[Optional[int], Optional[Video]]:

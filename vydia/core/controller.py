@@ -162,9 +162,15 @@ class Controller:
         self.view.widget.update_info_text(msg)
 
     def handle_cmdline_input(self, msg: str) -> None:
-        if msg.lower() in ('q', 'quit'):
+        msg = msg.lower()
+
+        if msg in ('q', 'quit'):
             raise urwid.ExitMainLoop()
 
+        if msg.lower() in ('reverse',):
+            if self.player is not None and self.player.playlist is not None:
+                self.player.playlist.reverse()
+                self.player.setup(reload_playlist=False)
 
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
