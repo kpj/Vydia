@@ -185,7 +185,8 @@ class PlayerQueue:
                 self.controller.send_msg(
                     f'Loaded playlist with {plugin_name}')
             else:
-                assert self.playlist is not None, 'Playlist has not been loaded'
+                assert self.playlist is not None, \
+                    'Playlist has not been loaded'
 
             state = self.controller.model._load_state()
             playlist_state = state[self.controller.current_playlist]
