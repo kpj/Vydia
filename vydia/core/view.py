@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import Iterable, TYPE_CHECKING
+from typing import Optional, Iterable, Tuple, Any, TYPE_CHECKING
 
 import urwid
 from logzero import logger
@@ -12,14 +12,13 @@ if TYPE_CHECKING:
 class View(urwid.WidgetWrap):
     def __init__(self, controller: 'Controller') -> None:
         self.controller = controller
-        # self.widget = None
+        self.widget = None  # type: Optional[urwid.WidgetWrap]
 
         urwid.WidgetWrap.__init__(self, self.intro_screen())
 
     def _activate_widget(self, w: urwid.WidgetWrap) -> None:
-        self.controller.input_callback = w.handle_input
-        self.controller.loop.widget = w.build()
         self.widget = w
+        self.contents.update(body=(self.widget.build(), None))
 
     def intro_screen(self) -> urwid.Widget:
         w = urwid.Filler(urwid.Text('Loading'), 'top')
@@ -46,7 +45,7 @@ class BaseView(ABC):
     def handle_mouse(self, button: int, choice: str) -> None:
         pass
 
-    def handle_input(self, key: str) -> None:
+    def handle_input(self, key: str) -> Optional[str]:
         pass
 
 
@@ -96,10 +95,13 @@ class EpisodeOverview(BaseView):
 
         self.title_widget = urwid.Text(self.title)
 
-        return urwid.Frame(
+        w = urwid.Frame(
             main,
             header=self.title_widget,
             footer=self.info_bar)
+        w.keypress = lambda size, key: \
+            w.body.keypress(size, self.handle_input(key))
+        return w
 
     def update_info_text(self, txt: str) -> None:
         self.info_bar.set_text(txt)
@@ -112,11 +114,11 @@ class EpisodeOverview(BaseView):
     def handle_mouse(self, button: int, choice: str) -> None:
         self.controller.on_video_selected(choice)
 
-    def handle_input(self, key: str) -> None:
+    def handle_input(self, key: str) -> Optional[str]:
         if isinstance(key, str) and key.lower() == 'c':
-            self.controller.continue_playback()
+            return self.controller.continue_playback()
         else:
-            logger.info(f'Unknown key "{key}"')
+            return key
 
     def set_title(self, title: str) -> None:
         self.title = title

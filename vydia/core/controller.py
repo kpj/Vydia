@@ -56,8 +56,6 @@ class Controller:
         if key in ('Q', 'q', 'esc'):
             raise urwid.ExitMainLoop()
 
-        if self.input_callback is not None:
-            self.input_callback(key)
 
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id
