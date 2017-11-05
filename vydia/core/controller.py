@@ -154,9 +154,11 @@ class Controller:
         else:
             txt = 'Nothing to resume'
 
+        assert self.view.widget is not None, 'Widget has not been assembled'
         self.view.widget.update_info_box(txt)
 
     def send_msg(self, msg: str) -> None:
+        assert self.view.widget is not None, 'Widget has not been assembled'
         self.view.widget.update_info_text(msg)
 
     def handle_cmdline_input(self, msg: str) -> None:
@@ -212,6 +214,8 @@ class PlayerQueue:
                 self.item_list.append(cur)
 
             v = self.controller.view.widget
+            assert v is not None, 'Widget has not been assembled'
+
             v.set_title(self.playlist.title)
             v.set_items(self.item_list)
             self.controller.assemble_info_box()
