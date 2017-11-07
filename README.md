@@ -8,6 +8,26 @@ A modularized video player written in Python.
 $ pip install vydia
 ```
 
+## Parameters and Commands
+
+```bash
+$ vydia --help
+Usage: vydia [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --video / --no-video  Suppress mpv video output.
+  --help                Show this message and exit.
+
+Commands:
+  add_playlist
+```
+
+Additionally, an internal commandline can be summoned by typing `:`.
+The following commands are supported (in the correct context):
+* `reload`: reload playlist using plugin
+* `reverse`: reverse episode order
+* `quit`: quit Vydia
+
 ## Plugins
 
 * Filesystem
