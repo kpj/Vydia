@@ -172,6 +172,10 @@ class Controller:
                 self.player.playlist.reverse()
                 self.player.setup(reload_playlist=False)
 
+        if msg.lower() in ('reload',):
+            if self.player is not None:
+                self.player.setup()
+
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
