@@ -26,6 +26,7 @@ Additionally, an internal commandline can be summoned by typing `:`.
 The following commands are supported (in the correct context):
 * `reload`: reload playlist using plugin
 * `reverse`: reverse episode order
+* `shuffle`: shuffle episode order
 * `quit`: quit Vydia
 
 ## Plugins

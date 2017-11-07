@@ -3,6 +3,7 @@ Plugins for video backends
 """
 
 import os
+import random
 import collections
 from abc import ABCMeta, abstractmethod, abstractproperty
 
@@ -52,7 +53,16 @@ class Playlist(List['Video']):
     def reverse(self) -> None:
         tmp = self[:]
         self.clear()
+
         for v in reversed(tmp):
+            self.append(v)
+
+    def shuffle(self) -> None:
+        tmp = self[:]
+        self.clear()
+
+        random.shuffle(tmp)
+        for v in tmp:
             self.append(v)
 
     def get_video_by_title(

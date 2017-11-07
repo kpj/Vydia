@@ -176,11 +176,16 @@ class EpisodeOverview(BaseView):
     def handle_command(self, cmd: str) -> None:
         pl = self.controller.player
 
+        if cmd in ('reload',):
+            if pl is not None:
+                pl.setup()
+
         if cmd in ('reverse',):
             if pl is not None and pl.playlist is not None:
                 pl.playlist.reverse()
                 pl.setup(reload_playlist=False)
 
-        if cmd in ('reload',):
-            if pl is not None:
-                pl.setup()
+        if cmd in ('shuffle',):
+            if pl is not None and pl.playlist is not None:
+                pl.playlist.shuffle()
+                pl.setup(reload_playlist=False)
