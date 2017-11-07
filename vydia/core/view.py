@@ -108,9 +108,9 @@ class EpisodeOverview(BaseView):
     def __init__(self, controller: 'Controller') -> None:
         self.controller = controller
 
-        self.info_box = None  # type: urwid.WidgetWrap
-        self.info_bar = None  # type: urwid.WidgetWrap
-        self.title_widget = None  # type: urwid.WidgetWrap
+        self.info_box = None  # type: Optional[urwid.WidgetWrap]
+        self.info_bar = None  # type: Optional[urwid.WidgetWrap]
+        self.title_widget = None  # type: Optional[urwid.WidgetWrap]
 
         self.info = self.controller.get_current_playlist_info()
 
