@@ -60,6 +60,16 @@ class Controller:
             self.view.show_cmdline()
             return
 
+    def handle_cmdline_input(self, msg: str) -> None:
+        msg = msg.lower()
+
+        if msg in ('q', 'quit'):
+            raise urwid.ExitMainLoop()
+
+        if self.view.widget is not None:
+            logger.info(f'Executing command {msg}')
+            self.view.widget.handle_command(msg)
+
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id
         logger.info(f'Selected playlist {self.current_playlist}')
@@ -160,21 +170,6 @@ class Controller:
     def send_msg(self, msg: str) -> None:
         assert self.view.widget is not None, 'Widget has not been assembled'
         self.view.widget.update_info_text(msg)
-
-    def handle_cmdline_input(self, msg: str) -> None:
-        msg = msg.lower()
-
-        if msg in ('q', 'quit'):
-            raise urwid.ExitMainLoop()
-
-        if msg.lower() in ('reverse',):
-            if self.player is not None and self.player.playlist is not None:
-                self.player.playlist.reverse()
-                self.player.setup(reload_playlist=False)
-
-        if msg.lower() in ('reload',):
-            if self.player is not None:
-                self.player.setup()
 
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:

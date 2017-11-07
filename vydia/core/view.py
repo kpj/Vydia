@@ -79,6 +79,9 @@ class BaseView(ABC):
     def handle_input(self, key: str) -> Optional[str]:
         pass
 
+    def handle_command(self, cmd: str) -> None:
+        pass
+
 
 class PlaylistOverview(BaseView):
     def __init__(self, controller: 'Controller') -> None:
@@ -169,3 +172,15 @@ class EpisodeOverview(BaseView):
                 urwid.AttrMap(button, None, focus_map='reversed'))
 
         self.controller.loop.draw_screen()
+
+    def handle_command(self, cmd: str) -> None:
+        pl = self.controller.player
+
+        if cmd in ('reverse',):
+            if pl is not None and pl.playlist is not None:
+                pl.playlist.reverse()
+                pl.setup(reload_playlist=False)
+
+        if cmd in ('reload',):
+            if pl is not None:
+                pl.setup()
