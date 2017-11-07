@@ -19,7 +19,9 @@ if TYPE_CHECKING:
 
 
 class Controller:
-    def __init__(self) -> None:
+    def __init__(self, config: Dict[str, Any]) -> None:
+        self.config = config
+
         self.current_playlist = None  # type: Optional[str]
         self.input_callback = None
         self.player = None  # type: Optional[PlayerQueue]
@@ -175,8 +177,8 @@ class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
         self.mpv = Player(
-            self.handle_mpv_pos,
-            self.handle_mpv_event)
+            self.handle_mpv_pos, self.handle_mpv_event,
+            disable_video=not self.controller.config['show_video'])
 
         if self.controller.current_playlist is None:
             raise RuntimeError('Current playlist is not set')

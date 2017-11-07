@@ -9,12 +9,17 @@ class Player(object):
     def __init__(
         self,
         time_callback: Callable[[str, float], None],
-        event_callback: Callable[[Any], None]
+        event_callback: Callable[[Any], None],
+        disable_video: bool = False
     ) -> None:
+        optional_opts = {}
+        if disable_video:
+            optional_opts['vo'] = 'null'
+
         self.mpv = mpv.MPV(
             'force-window',
             input_default_bindings=True, input_vo_keyboard=True,
-            ytdl=True)
+            ytdl=True, **optional_opts)
 
         self.mpv.observe_property('time-pos', time_callback)
         self.mpv.register_event_callback(event_callback)

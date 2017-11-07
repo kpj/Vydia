@@ -12,10 +12,17 @@ from .extra.utils import load_playlist
 
 
 @click.group(invoke_without_command=True)
+@click.option(
+    '--video/--no-video', default=True,
+    help='Suppress mpv video output.')
 @click.pass_context
-def main(ctx: Any) -> None:
+def main(ctx: Any, video: bool) -> None:
+    config = {
+        'show_video': video
+    }
+
     if ctx.invoked_subcommand is None:
-        with Controller() as c:
+        with Controller(config) as c:
             c.main()
 
 @main.command()
