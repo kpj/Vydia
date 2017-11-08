@@ -170,6 +170,7 @@ class EpisodeOverview(BaseView):
         self.controller.loop.draw_screen()
 
     def set_items(self, items: Iterable[str]) -> None:
+        old_focus = self.vid_list.get_focus()[1]
         self.vid_list.clear()
 
         self.items = items
@@ -178,6 +179,9 @@ class EpisodeOverview(BaseView):
             urwid.connect_signal(button, 'click', self.handle_mouse, it)
             self.vid_list.append(
                 urwid.AttrMap(button, None, focus_map='reversed'))
+
+        if old_focus is not None:
+            self.vid_list.set_focus(old_focus)
 
         self.controller.loop.draw_screen()
 
