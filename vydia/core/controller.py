@@ -254,13 +254,7 @@ class PlayerQueue:
         self.controller.assemble_info_box()
 
         if play_next:
-            vid = self.get_next_video()
-            if vid is None:
-                self.controller.send_msg('Reached end of playlist')
-            else:
-                self.controller.send_msg(
-                    f'Autoplay next video in playlist ({vid.title})')
-                self.play_video(vid)
+            self.play_next_video()
 
         self.setup(reload_playlist=False)
 
@@ -276,7 +270,21 @@ class PlayerQueue:
         t = threading.Thread(target=tmp)
         t.start()
 
-    def get_next_video(self) -> Optional['Video']:
+    def play_next_video(self) -> None:
+        vid = self._get_video_relative(1)
+        if vid is None:
+            self.controller.send_msg('Reached end of playlist')
+        else:
+            self.play_video(vid)
+
+    def play_previous_video(self) -> None:
+        vid = self._get_video_relative(-1)
+        if vid is None:
+            self.controller.send_msg('Reached end of playlist')
+        else:
+            self.play_video(vid)
+
+    def _get_video_relative(self, idx_shift: int) -> Optional['Video']:
         assert self.playlist is not None
         assert self.current_vid is not None
 
@@ -285,7 +293,7 @@ class PlayerQueue:
             raise RuntimeError(
                 f'Could not find video "{self.current_vid.title}"')
 
-        next_idx = idx + 1
+        next_idx = idx + idx_shift
 
         if next_idx < len(self.playlist):
             return self.playlist[next_idx]
