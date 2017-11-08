@@ -149,8 +149,16 @@ class EpisodeOverview(BaseView):
         self.controller.on_video_selected(choice)
 
     def handle_input(self, key: str) -> Optional[str]:
-        if isinstance(key, str) and key.lower() == 'c':
+        if key == 'c':
             self.controller.continue_playback()
+            return None
+        elif key == '>':
+            assert self.controller.player is not None
+            self.controller.player.play_next_video()
+            return None
+        elif key == '<':
+            assert self.controller.player is not None
+            self.controller.player.play_previous_video()
             return None
         else:
             return key
@@ -179,13 +187,19 @@ class EpisodeOverview(BaseView):
         if cmd in ('reload',):
             if pl is not None:
                 pl.setup()
-
-        if cmd in ('reverse',):
+        elif cmd in ('reverse',):
             if pl is not None and pl.playlist is not None:
                 pl.playlist.reverse()
                 pl.setup(reload_playlist=False)
-
-        if cmd in ('shuffle',):
+        elif cmd in ('shuffle',):
             if pl is not None and pl.playlist is not None:
                 pl.playlist.shuffle()
                 pl.setup(reload_playlist=False)
+        elif cmd in ('next',):
+            assert self.controller.player is not None
+            self.controller.player.play_next_video()
+        elif cmd in ('prev', 'previous'):
+            assert self.controller.player is not None
+            self.controller.player.play_previous_video()
+        elif cmd in ('continue',):
+            self.controller.continue_playback()

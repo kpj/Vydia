@@ -27,7 +27,10 @@ The following commands are supported (in the correct context):
 * `reload`: reload playlist using plugin
 * `reverse`: reverse episode order
 * `shuffle`: shuffle episode order
-* `quit`: quit Vydia
+* `next`: play next video (`[>]`)
+* `previous`: play previous video (`[<]`)
+* `continue`: continue playback from last save (`[c]`)
+* `quit`: quit Vydia (`[q]`)
 
 ## Plugins
 
