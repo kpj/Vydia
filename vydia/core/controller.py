@@ -64,6 +64,9 @@ class Controller:
             return
 
     def handle_cmdline_input(self, msg: str) -> None:
+        if len(msg) == 0:
+            return
+
         if msg.lower() in ('q', 'quit'):
             raise urwid.ExitMainLoop()
 
