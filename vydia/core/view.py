@@ -113,6 +113,13 @@ class PlaylistOverview(BaseView):
 
             self.controller.model.delete_playlist_by_name(pl_name)
             self.controller.view.show_playlist_overview()
+        elif cmd in ('add',):
+            if len(args) == 0:
+                return
+
+            for pl_name in args:
+                self.controller.model.add_new_playlist(pl_name)
+            self.controller.view.show_playlist_overview()
 
 class EpisodeOverview(BaseView):
     def __init__(self, controller: 'Controller') -> None:

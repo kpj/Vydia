@@ -25,6 +25,7 @@ Commands:
 Additionally, an internal commandline can be summoned by typing `:`.
 The following commands are supporte (in the correct context):
 * Playlist View:
+  * `add <playlist id>`: add given playlist
   * `delete`: delete currently selected playlist
   * `quit`: quit Vydia (`[q]`)
 * Episode View:

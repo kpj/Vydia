@@ -8,7 +8,6 @@ import click
 
 from .core.controller import Controller
 from .core.model import Model
-from .extra.utils import load_playlist
 
 
 @click.group(invoke_without_command=True)
@@ -28,14 +27,8 @@ def main(ctx: Any, video: bool) -> None:
 @main.command()
 @click.argument('playlist')
 def add_playlist(playlist: str) -> None:
-    try:
-        plugin_name, pl = load_playlist(playlist)
-    except ValueError:
-        print(f'No plugin found for "{playlist}"')
-        return
-
-    Model().update_state(pl.title, {'id': playlist, 'episodes': {}})
-    print(f'Added "{pl.title}" using {plugin_name}')
+    title, plugin = Model().add_new_playlist(playlist)
+    print(f'Added "{title}" using {plugin}')
 
 if __name__ == '__main__':
     main()

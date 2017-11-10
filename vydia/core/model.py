@@ -5,9 +5,9 @@ import collections
 from pathlib import Path
 from appdirs import AppDirs
 
-from typing import Any, Union, Optional, Iterable, Dict, List
+from typing import Any, Union, Optional, Iterable, Dict, List, Tuple
 
-from ..extra.utils import nested_dict_update
+from ..extra.utils import nested_dict_update, load_playlist
 
 
 class Model:
@@ -41,6 +41,16 @@ class Model:
     def get_current_video(self, pid: str) -> Dict[str, str]:
         _state = self._load_state()
         return _state[pid].get('current', None)
+
+    def add_new_playlist(self, plid: str) -> Tuple[str, str]:
+        try:
+            plugin_name, pl = load_playlist(plid)
+        except ValueError:
+            print(f'No plugin found for "{plid}"')
+            return
+
+        self.update_state(pl.title, {'id': plid, 'episodes': {}})
+        return pl.title, plugin_name
 
     def update_state(
         self,

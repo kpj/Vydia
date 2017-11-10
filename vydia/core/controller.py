@@ -69,9 +69,8 @@ class Controller:
 
         if self.view.widget is not None:
             cmd, *args = shlex.split(msg)
-
             logger.info(f'Executing command {cmd} with "{args}"')
-            self.view.widget.handle_command(msg, args=args)
+            self.view.widget.handle_command(cmd, args=args)
 
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id
