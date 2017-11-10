@@ -33,6 +33,11 @@ class Model:
         cur.update({'name': pid})
         return cur
 
+    def delete_playlist_by_name(self, name: str) -> None:
+        _state = self._load_state()
+        _state.pop(name)
+        self._save_state(_state)
+
     def get_current_video(self, pid: str) -> Dict[str, str]:
         _state = self._load_state()
         return _state[pid].get('current', None)

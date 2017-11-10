@@ -1,4 +1,5 @@
 import time
+import shlex
 import logging
 import threading
 
@@ -63,14 +64,14 @@ class Controller:
             return
 
     def handle_cmdline_input(self, msg: str) -> None:
-        msg = msg.lower()
-
-        if msg in ('q', 'quit'):
+        if msg.lower() in ('q', 'quit'):
             raise urwid.ExitMainLoop()
 
         if self.view.widget is not None:
-            logger.info(f'Executing command {msg}')
-            self.view.widget.handle_command(msg)
+            cmd, *args = shlex.split(msg)
+
+            logger.info(f'Executing command {cmd} with "{args}"')
+            self.view.widget.handle_command(msg, args=args)
 
     def on_playlist_selected(self, playlist_id: str) -> None:
         self.current_playlist = playlist_id

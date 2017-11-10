@@ -23,14 +23,18 @@ Commands:
 ```
 
 Additionally, an internal commandline can be summoned by typing `:`.
-The following commands are supported (in the correct context):
-* `reload`: reload playlist using plugin
-* `reverse`: reverse episode order
-* `shuffle`: shuffle episode order
-* `next`: play next video (`[>]`)
-* `previous`: play previous video (`[<]`)
-* `continue`: continue playback from last save (`[c]`)
-* `quit`: quit Vydia (`[q]`)
+The following commands are supporte (in the correct context):
+* Playlist View:
+  * `delete`: delete currently selected playlist
+  * `quit`: quit Vydia (`[q]`)
+* Episode View:
+  * `reload`: reload playlist using plugin
+  * `reverse`: reverse episode order
+  * `shuffle`: shuffle episode order
+  * `next`: play next video (`[>]`)
+  * `previous`: play previous video (`[<]`)
+  * `continue`: continue playback from last save (`[c]`)
+  * `quit`: quit Vydia (`[q]`)
 
 ## Plugins
 

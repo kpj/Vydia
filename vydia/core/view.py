@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import Optional, Iterable, Tuple, Any, TYPE_CHECKING
+from typing import Optional, Tuple, Any, List, TYPE_CHECKING
 
 import urwid
 import urwid_readline
@@ -65,7 +65,7 @@ class CmdlineView(urwid_readline.ReadlineEdit):
         super().keypress(size, key)
 
 class BaseView(ABC):
-    def __init__(self, title: str, items: Iterable[str]) -> None:
+    def __init__(self, title: str, items: List[str]) -> None:
         self.title = title
         self.items = items
 
@@ -73,13 +73,13 @@ class BaseView(ABC):
     def build(self) -> urwid.WidgetWrap:
         pass
 
-    def handle_mouse(self, button: int, choice: str) -> None:
+    def handle_select(self, button: int, choice: str) -> None:
         pass
 
     def handle_input(self, key: str) -> Optional[str]:
         pass
 
-    def handle_command(self, cmd: str) -> None:
+    def handle_command(self, cmd: str, args: List[Any]) -> None:
         pass
 
 
@@ -90,14 +90,14 @@ class PlaylistOverview(BaseView):
         super().__init__(
             'Existing playlists', self.controller.get_playlist_list())
 
-    def handle_mouse(self, button: int, choice: str) -> None:
+    def handle_select(self, button: int, choice: str) -> None:
         self.controller.on_playlist_selected(choice)
 
     def build(self) -> urwid.WidgetWrap:
         body = []
         for it in self.items:
             button = urwid.Button(it)
-            urwid.connect_signal(button, 'click', self.handle_mouse, it)
+            urwid.connect_signal(button, 'click', self.handle_select, it)
             body.append(
                 urwid.AttrMap(button, None, focus_map='reversed'))
 
@@ -106,6 +106,13 @@ class PlaylistOverview(BaseView):
 
         return urwid.Frame(item_list, header=urwid.Text(self.title))
 
+    def handle_command(self, cmd: str, args: List[Any]) -> None:
+        if cmd in ('delete',):
+            idx = self.main_list.get_focus()[1]
+            pl_name = self.items[idx]
+
+            self.controller.model.delete_playlist_by_name(pl_name)
+            self.controller.view.show_playlist_overview()
 
 class EpisodeOverview(BaseView):
     def __init__(self, controller: 'Controller') -> None:
@@ -145,7 +152,7 @@ class EpisodeOverview(BaseView):
         self.info_box.base_widget.set_text(txt)
         self.controller.loop.draw_screen()
 
-    def handle_mouse(self, button: int, choice: str) -> None:
+    def handle_select(self, button: int, choice: str) -> None:
         self.controller.on_video_selected(choice)
 
     def handle_input(self, key: str) -> Optional[str]:
@@ -169,14 +176,14 @@ class EpisodeOverview(BaseView):
 
         self.controller.loop.draw_screen()
 
-    def set_items(self, items: Iterable[str]) -> None:
+    def set_items(self, items: List[str]) -> None:
         old_focus = self.vid_list.get_focus()[1]
         self.vid_list.clear()
 
         self.items = items
         for it in self.items:
             button = urwid.Button(it)
-            urwid.connect_signal(button, 'click', self.handle_mouse, it)
+            urwid.connect_signal(button, 'click', self.handle_select, it)
             self.vid_list.append(
                 urwid.AttrMap(button, None, focus_map='reversed'))
 
@@ -185,7 +192,7 @@ class EpisodeOverview(BaseView):
 
         self.controller.loop.draw_screen()
 
-    def handle_command(self, cmd: str) -> None:
+    def handle_command(self, cmd: str, args: List[Any]) -> None:
         pl = self.controller.player
 
         if cmd in ('reload',):
