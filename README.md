@@ -10,6 +10,14 @@ A modularized video player written in Python.
 $ pip install vydia
 ```
 
+## Usage
+
+Simply call `vydia` without arguments to launch the TUI:
+
+```bash
+$ vydia
+```
+
 ## Parameters and Commands
 
 ```bash
