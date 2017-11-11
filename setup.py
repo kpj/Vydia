@@ -6,7 +6,7 @@ with open('README.md', encoding='utf-8') as fd:
 
 setup(
     name='vydia',
-    version='0.0.1',
+    version='0.5.0',
 
     description='A modularized video player with resume function',
     long_description=long_description,
