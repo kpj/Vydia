@@ -1,15 +1,14 @@
 from setuptools import setup, find_packages
 
 
-with open('README.md', encoding='utf-8') as fd:
-    long_description = fd.read()
-
 setup(
     name='vydia',
-    version='0.5.0',
+    version='0.5.1',
 
     description='A modularized video player with resume function',
-    long_description=long_description,
+
+    setup_requires=['setuptools-markdown'],
+    long_description_markdown_filename='README.md',
 
     url='https://github.com/kpj/Vydia',
 
