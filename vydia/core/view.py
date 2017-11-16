@@ -174,6 +174,10 @@ class EpisodeOverview(BaseView):
             assert self.controller.player is not None
             self.controller.player.play_previous_video()
             return None
+        elif key == ' ':
+            assert self.controller.player is not None
+            self.controller.player.mpv.toggle_pause()
+            return None
         else:
             return key
 
@@ -221,3 +225,6 @@ class EpisodeOverview(BaseView):
             self.controller.player.play_previous_video()
         elif cmd in ('continue',):
             self.controller.continue_playback()
+        elif cmd in ('pause',):
+            assert self.controller.player is not None
+            self.controller.player.mpv.toggle_pause()

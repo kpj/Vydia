@@ -39,6 +39,7 @@ The following commands are supporte (in the correct context):
   * `delete`: delete currently selected playlist
   * `quit`: quit Vydia (`[q]`)
 * Episode View:
+  * `pause`: toggle pause in running episode (`<space>`)
   * `reload`: reload playlist using plugin
   * `reverse`: reverse episode order
   * `shuffle`: shuffle episode order

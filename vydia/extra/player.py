@@ -51,6 +51,8 @@ class Player(object):
         """
         self.mpv.terminate()
 
+    def toggle_pause(self) -> None:
+        self.mpv.pause = not self.mpv.pause
 
 if __name__ == '__main__':
     def _print_time(prop_name: str, time: float) -> None:
