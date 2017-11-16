@@ -12,7 +12,7 @@ from typing import Any, Iterable, Optional, Dict, List, TYPE_CHECKING
 
 from .model import Model
 from .view import View
-from ..extra.player import Player
+from ..extra.player import PlayerEvent, LocalPlayer
 from ..extra.utils import load_playlist, sec2ts, ts2sec
 
 if TYPE_CHECKING:
@@ -48,7 +48,7 @@ class Controller:
     ) -> None:
         self.save_state()
         if self.player is not None:
-            self.player.mpv.stop()
+            self.player.mpv.shutdown()
         logger.info(f'Destroy controller')
 
     def main(self) -> None:
@@ -179,7 +179,7 @@ class Controller:
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
-        self.mpv = Player(
+        self.mpv = LocalPlayer(
             self.handle_mpv_pos, self.handle_mpv_event,
             disable_video=not self.controller.config['show_video'])
 
@@ -233,7 +233,7 @@ class PlayerQueue:
         t = threading.Thread(target=tmp)
         t.start()
 
-    def handle_mpv_pos(self, prop_name: str, pos: float) -> None:
+    def handle_mpv_pos(self, pos: float) -> None:
         assert self.current_vid is not None
 
         if pos is not None:
@@ -243,14 +243,12 @@ class PlayerQueue:
             self.controller.send_msg(
                 f'Playing "{self.current_vid.title}" ({sec2ts(self.ts)})')
 
-    def handle_mpv_event(self, ev: Any) -> None:
-        if ev['event_id'] == 7:  # end-file
-            reason = ev['event']['reason']
-            if reason == 0:  # graceful shutdown
-                self.onVideoEnd(play_next=True)
-            elif reason == 2:  # force quit
-                self.controller.send_msg('Waiting for input')
-                self.onVideoEnd()
+    def handle_mpv_event(self, ev: PlayerEvent) -> None:
+        if ev is PlayerEvent.VIDEO_OVER:
+            self.onVideoEnd(play_next=True)
+        elif ev is PlayerEvent.VIDEO_QUIT:
+            self.controller.send_msg('Waiting for input')
+            self.onVideoEnd()
 
     def onVideoEnd(self, play_next: bool = False) -> None:
         self.controller.save_state()
