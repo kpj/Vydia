@@ -5,7 +5,7 @@ Plugins for video backends
 import os
 import random
 import collections
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod, abstractproperty
 
 from typing import Any, List, Tuple, Optional, Type, Callable
 
@@ -73,7 +73,7 @@ class Playlist(List['Video']):
                 return i, vid
         return None, None
 
-class BasePlugin(metaclass=ABCMeta):
+class BasePlugin(ABC):
     @abstractmethod
     def extract_playlist(self, url: str) -> Optional[Playlist]:
         """ Return playlist object
