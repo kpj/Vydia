@@ -136,10 +136,11 @@ class Controller:
         if self.player is not None:
             logger.info(f'Explicit state save')
             assert self.current_playlist is not None
-            assert self.player.ts is not None
 
             # update current video
             if self.player.current_vid is not None:
+                assert self.player.ts is not None
+
                 self.model.update_state(
                     self.current_playlist, {
                         'current': {
