@@ -153,11 +153,11 @@ class EpisodeOverview(BaseView):
 
     def update_info_text(self, txt: str) -> None:
         self.info_bar.set_text(txt)
-        self.controller.loop.draw_screen()
+        self.controller.update_views()
 
     def update_info_box(self, txt: str) -> None:
         self.info_box.base_widget.set_text(txt)
-        self.controller.loop.draw_screen()
+        self.controller.update_views()
 
     def handle_select(self, button: int, choice: str) -> None:
         self.controller.on_video_selected(choice)
@@ -185,7 +185,7 @@ class EpisodeOverview(BaseView):
         self.title = title
         self.title_widget.set_text(self.title)
 
-        self.controller.loop.draw_screen()
+        self.controller.update_views()
 
     def set_items(self, items: List[str]) -> None:
         old_focus = self.vid_list.get_focus()[1]
@@ -201,7 +201,7 @@ class EpisodeOverview(BaseView):
         if old_focus is not None:
             self.vid_list.set_focus(old_focus)
 
-        self.controller.loop.draw_screen()
+        self.controller.update_views()
 
     def handle_command(self, cmd: str, args: List[Any]) -> None:
         pl = self.controller.player

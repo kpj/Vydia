@@ -177,6 +177,12 @@ class Controller:
         assert self.view.widget is not None, 'Widget has not been assembled'
         self.view.widget.update_info_text(msg)
 
+    def update_views(self) -> None:
+        if not self.loop.screen.started:
+            return None
+
+        self.loop.draw_screen()
+
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
