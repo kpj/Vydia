@@ -146,11 +146,7 @@ class Controller:
                         'current': {
                             'title': self.player.current_vid.title,
                             'timestamp': sec2ts(self.player.ts)
-                        }
-                    })
-
-                self.model.update_state(
-                    self.current_playlist, {
+                        },
                         'episodes': {
                             self.player.current_vid.title: {
                                 'current_timestamp': sec2ts(self.player.ts)
