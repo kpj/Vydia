@@ -120,6 +120,10 @@ class Controller:
 
         _cur = self.model.get_current_video(self.current_playlist)
 
+        if _cur is None:
+            self.send_msg('Nothing to resume...')
+            return
+
         i, vid = self.player.playlist.get_video_by_title(_cur['title'])
         self.send_msg(f'Resuming "{_cur["title"]}" at {_cur["timestamp"]}')
 

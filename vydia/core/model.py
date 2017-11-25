@@ -38,7 +38,7 @@ class Model:
         _state.pop(name)
         self._save_state(_state)
 
-    def get_current_video(self, pid: str) -> Dict[str, str]:
+    def get_current_video(self, pid: str) -> Optional[Dict[str, str]]:
         _state = self._load_state()
         return _state[pid].get('current', None)
 
