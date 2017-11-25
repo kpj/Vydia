@@ -1,31 +1,29 @@
-import threading
+import os
 import enum
+import time
+import threading
 from abc import ABC, abstractmethod
 
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
+
+if TYPE_CHECKING:
+    from ..core.controller import Controller
 
 
 PlayerEvent = enum.Enum('PlayerEvent', 'VIDEO_OVER VIDEO_QUIT')
 
 class BasePlayer(ABC):
-    def __init__(
+    @abstractmethod
+    def setup(
         self,
         time_callback: Callable[[float], None],
         event_callback: Callable[[PlayerEvent], None],
         disable_video: bool = False
     ) -> None:
-        self.time_callback = time_callback
-        self.event_callback = event_callback
-        self.disable_video = disable_video
-
-        self.setup()
-
-    @abstractmethod
-    def setup(self) -> None:
         pass
 
     @abstractmethod
-    def play_video(self, title: str, vid: str, start: int = 0) -> None:
+    def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
         pass
 
     @abstractmethod
@@ -36,10 +34,107 @@ class BasePlayer(ABC):
     def shutdown(self) -> None:
         pass
 
+    def set_controller(self, controller: 'Controller') -> None:
+        self.controller = controller
+
+class AirPlayer(BasePlayer):
+    def __init__(self, ip: str, port: int) -> None:
+        self.ip = ip
+        self.port = port
+
+    def setup(
+        self,
+        time_callback: Callable[[float], None],
+        event_callback: Callable[[PlayerEvent], None],
+        disable_video: bool = False
+    ) -> None:
+        self.time_callback = time_callback
+        self.event_callback = event_callback
+
+        if disable_video:
+            raise RuntimeError('Disabling video not supported with Airplay.')
+
+        from airplay import AirPlay
+        self.ap = AirPlay(self.ip, self.port)
+
+        threading.Thread(
+            target=self._handle_events, daemon=True).start()
+        threading.Thread(
+            target=self._check_video_position, daemon=True).start()
+
+    def _handle_events(self) -> None:
+        for event in self.ap.events():
+            state = event['state']
+
+            if state == 'stopped':
+                if self.controller.player.ts is None:
+                    return None
+                assert self.controller.player is not None
+                assert self.controller.player.current_vid is not None
+
+                with open('/tmp/foo.txt', 'a') as fd:
+                    print('EVENT', event, file=fd)
+
+                # AirPlay does not understand the difference between
+                # force-stopping and gracefully ending a video when
+                # it is over. Here, this is approximated by checking
+                # how close we are to the video's end.
+                # A difference of 5 seems to magically work out.
+                MAGIC_END_MARKER = 5
+                time2end = self.controller.player.current_vid.duration \
+                    - self.controller.player.ts
+
+                if time2end < MAGIC_END_MARKER:
+                    self.event_callback(PlayerEvent.VIDEO_OVER)
+                else:
+                    self.event_callback(PlayerEvent.VIDEO_QUIT)
+
+    def _check_video_position(self) -> None:
+        while True:
+            info = self.ap.playback_info()
+            if info and 'position' in info:
+                self.time_callback(info['position'])
+            time.sleep(1)
+
+    def _is_local_file(self, fname: str) -> bool:
+        return os.path.exists(fname)
+
+    def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
+        if self._is_local_file(vid):
+            vid_url = self.ap.serve(os.path.abspath(vid))
+        else:
+            vid_url = vid
+
+        # position must be fraction between 0 and 1
+        assert self.controller.player is not None
+        assert self.controller.player.current_vid is not None
+        assert start <= self.controller.player.current_vid.duration
+        start_frac = start / self.controller.player.current_vid.duration
+
+        self.ap.play(vid_url, position=start_frac)
+
+    def toggle_pause(self) -> None:
+        info = self.ap.playback_info()
+        if info['rate'] == 0:
+            self.ap.rate(1)
+        else:
+            self.ap.rate(0)
+
+    def shutdown(self) -> None:
+        self.ap.stop()
+
 class LocalPlayer(BasePlayer):
-    def setup(self) -> None:
+    def setup(
+        self,
+        time_callback: Callable[[float], None],
+        event_callback: Callable[[PlayerEvent], None],
+        disable_video: bool = False
+    ) -> None:
+        self.time_callback = time_callback
+        self.event_callback = event_callback
+
         optional_opts = {}
-        if self.disable_video:
+        if disable_video:
             optional_opts['vo'] = 'null'
 
         import mpv
@@ -68,7 +163,7 @@ class LocalPlayer(BasePlayer):
             elif reason == 2:  # force quit
                 self.event_callback(PlayerEvent.VIDEO_QUIT)
 
-    def play_video(self, title: str, vid: str, start: int = 0) -> None:
+    def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
         #self.mpv.command('stop')
         self.mpv.playlist_clear()
         self.mpv['title'] = title
@@ -100,7 +195,8 @@ if __name__ == '__main__':
     def _print_event(ev: PlayerEvent) -> None:
         print(ev)
 
-    pl = LocalPlayer(_print_time, _print_event)
+    pl = LocalPlayer()
+    pl.setup(_print_time, _print_event)
 
     #pl.play_video('..')
     #pl.queue_video('..')

@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/vydia.svg?style=flat)](https://pypi.python.org/pypi/vydia)
 
-A modularized video player written in Python.
+A modularized video player written in Python (supporting AirPlay).
 
 ## Installation
 
@@ -26,10 +26,12 @@ Usage: vydia [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --video / --no-video  Suppress mpv video output.
+  --airplay TEXT        Use airplay server if specified (format: "<ip>:<port>").
   --help                Show this message and exit.
 
 Commands:
-  add_playlist
+  add_playlist          Add new playlist by id.
+  list_airplay_devices  List available airplay devices.
 ```
 
 Additionally, an internal commandline can be summoned by typing `:`.

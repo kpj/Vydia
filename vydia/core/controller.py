@@ -12,7 +12,7 @@ from typing import Any, Iterable, Optional, Dict, List, TYPE_CHECKING
 
 from .model import Model
 from .view import View
-from ..extra.player import PlayerEvent, LocalPlayer
+from ..extra.player import PlayerEvent, BasePlayer
 from ..extra.utils import load_playlist, sec2ts, ts2sec
 
 if TYPE_CHECKING:
@@ -20,8 +20,13 @@ if TYPE_CHECKING:
 
 
 class Controller:
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(
+        self,
+        player_backend: BasePlayer, config: Dict[str, Any]
+    ) -> None:
         self.config = config
+        self.player_backend = player_backend
+        self.player_backend.set_controller(self)
 
         self.current_playlist = None  # type: Optional[str]
         self.input_callback = None
@@ -48,7 +53,7 @@ class Controller:
     ) -> None:
         self.save_state()
         if self.player is not None:
-            self.player.mpv.shutdown()
+            self.player_backend.shutdown()
         logger.info(f'Destroy controller')
 
     def main(self) -> None:
@@ -186,7 +191,7 @@ class Controller:
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
-        self.mpv = LocalPlayer(
+        self.controller.player_backend.setup(
             self.handle_mpv_pos, self.handle_mpv_event,
             disable_video=not self.controller.config['show_video'])
 
@@ -269,14 +274,9 @@ class PlayerQueue:
     def play_video(self, vid: 'Video', start_pos: int = 0) -> None:
         self.current_vid = vid
 
-        def tmp() -> None:
-            self.mpv.play_video(
-                vid.title, vid.get_file_stream(),
-                start=start_pos)
-            self.mpv.mpv.wait_for_playback()
-
-        t = threading.Thread(target=tmp)
-        t.start()
+        self.controller.player_backend.play_video(
+            vid.get_file_stream(), vid.title,
+            start=start_pos)
 
     def play_next_video(self) -> None:
         vid = self._get_video_relative(1)
