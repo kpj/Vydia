@@ -81,8 +81,12 @@ class Model:
         if not os.path.isfile(fname):
             res: Dict[Any, Any] = {}
         else:
-            with open(fname) as fd:
-                res = json.load(fd)
+            try:
+                with open(fname) as fd:
+                    res = json.load(fd)
+            except json.decoder.JSONDecodeError:
+                print(f'Invalid state file: "{fname}"')
+                exit(-1)
 
         return collections.defaultdict(dict, res)
 
