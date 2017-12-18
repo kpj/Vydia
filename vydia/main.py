@@ -47,7 +47,12 @@ def main(ctx: Any, video: bool, airplay: str) -> None:
 @click.argument('playlist')
 def add_playlist(playlist: str) -> None:
     from .core.model import Model
-    title, plugin = Model().add_new_playlist(playlist)
+    result = Model().add_new_playlist(playlist)
+    if result is None:
+        print('Playlist could not be added')
+        exit(-1)
+
+    title, plugin = result
     print(f'Added "{title}" using {plugin}')
 
 @main.command(help='List available airplay devices.')
