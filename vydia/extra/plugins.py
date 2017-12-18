@@ -82,6 +82,7 @@ class BasePlugin(ABC):
 
 class FilesystemPlugin(BasePlugin):
     def extract_playlist(self, url: str) -> Optional[Playlist]:
+        url = os.path.abspath(url)
         if not os.path.exists(url):
             return None
 
