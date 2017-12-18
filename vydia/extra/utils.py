@@ -31,13 +31,18 @@ def sec2ts(sec: int) -> str:
     return time.strftime("%H:%M:%S", time.gmtime(sec))
 
 def get_video_duration(fname: str) -> int:
-    result = subprocess.Popen(
+    proc = subprocess.Popen(
         ['ffprobe', fname],
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = proc.communicate()
+
+    if proc.returncode != 0:
+        return -1
 
     dur_lines = [x.decode()
-                 for x in result.stdout.readlines() if b'Duration' in x]
-    assert len(dur_lines) == 1
+                 for x in stdout.split(b'\n')
+                 if b'Duration' in x]
+    assert len(dur_lines) == 1, dur_lines
 
     dur_str = dur_lines[0].split()[1].split('.')[0]
     return ts2sec(dur_str)
