@@ -30,7 +30,7 @@ setup(
 
     install_requires=[
         'appdirs', 'pafy', 'urwid', 'urwid_readline',
-        'click', 'python-mpv', 'logzero'
+        'click', 'python-mpv', 'logzero', 'airplay'
     ],
 
     entry_points={
