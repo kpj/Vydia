@@ -21,18 +21,43 @@ class MPVProxy:
         self.mpv_args = args
         self.mpv_kwargs = kwargs
 
+        # dummy functions
+        self.time_handler = lambda t, v: (t, v)
+
         # setup MPV
         self.pipe = multiprocessing.Pipe()
         multiprocessing.Process(
             target=self._run, args=(self.pipe,)).start()
 
+        # poll pipe (handle data incoming from mpv-process)
+        def handle_pipe():
+            output_p, input_p = self.pipe
+            while True:
+                try:
+                    type_, val = input_p.recv()
+
+                    if type_ == 'time-pos':
+                        self.time_handler(type_, val)
+                    else:
+                        raise RuntimeError(f'Invalid property-type "{type_}"')
+                except EOFError:
+                    break
+        threading.Thread(target=handle_pipe).start()
+
     def __getattr__(self, cmd):
         def wrapper(*args, **kwargs):
-            output_p, input_p = self.pipe
-            try:
-                input_p.send((cmd, args, kwargs))
-            except AttributeError as e:
-                print(f'Failed to send "{e}"')
+            if cmd == 'observe_property':  # handle unpickle-able lambdas
+                type_, func = args
+                if type_ == 'time-pos':
+                    self.time_handler = func
+                else:
+                    raise RuntimeError(f'Invalid property-type "{type_}"')
+            else:
+                output_p, input_p = self.pipe
+                try:
+                    input_p.send((cmd, args, kwargs))
+                except AttributeError as e:
+                    print(f'Failed to send "{e}"')
         return wrapper
 
     def _run(self, pipe):
@@ -48,7 +73,13 @@ class MPVProxy:
             player.handle,
             'wid'.encode('utf-8'), win.window_id.encode('utf-8'))
 
-        # poll pipe
+        # send time-position to parent process
+        def handle_time(prop_name, pos):
+            output_p, input_p = pipe
+            output_p.send((prop_name, pos))
+        player.observe_property('time-pos', handle_time)
+
+        # poll pipe (handle data sent to mpv-process)
         def handle_pipe():
             output_p, input_p = pipe
             while True:
