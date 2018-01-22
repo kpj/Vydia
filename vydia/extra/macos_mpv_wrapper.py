@@ -23,6 +23,7 @@ class MPVProxy:
 
         # dummy functions
         self.time_handler = lambda t, v: (t, v)
+        self.event_handler = lambda e: e
 
         # setup MPV
         self.pipe = multiprocessing.Pipe()
@@ -38,6 +39,8 @@ class MPVProxy:
 
                     if type_ == 'time-pos':
                         self.time_handler(type_, val)
+                    elif type_ == 'event':
+                        self.event_handler(val)
                     else:
                         raise RuntimeError(f'Invalid property-type "{type_}"')
                 except EOFError:
@@ -52,6 +55,9 @@ class MPVProxy:
                     self.time_handler = func
                 else:
                     raise RuntimeError(f'Invalid property-type "{type_}"')
+            elif cmd == 'register_event_callback':
+                func = args[0]
+                self.event_handler = func
             else:
                 output_p, input_p = self.pipe
                 try:
@@ -78,6 +84,22 @@ class MPVProxy:
             output_p, input_p = pipe
             output_p.send((prop_name, pos))
         player.observe_property('time-pos', handle_time)
+
+        # send events to parent process
+        def handle_event(event):
+            output_p, input_p = pipe
+
+            # fix: "ValueError: ctypes objects containing
+            # pointers cannot be pickled"
+            sane_event = {
+                'event_id': event['event_id'],
+                'event': {}
+            }
+            if event['event'] is not None:
+                sane_event['event']['reason'] = event['event'].get('reason', None)
+
+            output_p.send(('event', sane_event))
+        player.register_event_callback(handle_event)
 
         # poll pipe (handle data sent to mpv-process)
         def handle_pipe():
