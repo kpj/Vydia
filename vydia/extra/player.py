@@ -1,4 +1,5 @@
 import os
+import sys
 import enum
 import time
 import threading
@@ -137,11 +138,7 @@ class LocalPlayer(BasePlayer):
         if disable_video:
             optional_opts['vo'] = 'null'
 
-        import mpv
-        self.mpv = mpv.MPV(
-            'force-window',
-            input_default_bindings=True, input_vo_keyboard=True,
-            ytdl=True, **optional_opts)
+        self.mpv = self._create_mpv_instance(**optional_opts)
 
         self.mpv.observe_property('time-pos', self._handle_mpv_pos)
         self.mpv.register_event_callback(self._handle_mpv_event)
@@ -151,6 +148,23 @@ class LocalPlayer(BasePlayer):
             'Ctrl+c', 'AR_PLAY_HOLD', 'AR_CENTER_HOLD')
         for key in stop_keys:
             self.mpv.register_key_binding(key, 'stop')
+
+    def _create_mpv_instance(self, **optional_opts) -> 'mpv.MPV':
+        if sys.platform == 'darwin':  # is macOS
+            from .macos_mpv_wrapper import MPVProxy
+            mpv = MPVProxy(
+                ytdl=True,
+                **optional_opts)
+        else:
+            import mpv
+            mpv = mpv.MPV(
+                'force-window',
+                input_default_bindings=True,
+                input_vo_keyboard=True,
+                ytdl=True,
+                **optional_opts)
+
+        return mpv
 
     def _handle_mpv_pos(self, prop_name: str, pos: float) -> None:
         self.time_callback(pos)
@@ -166,11 +180,14 @@ class LocalPlayer(BasePlayer):
     def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
         #self.mpv.command('stop')
         self.mpv.playlist_clear()
-        self.mpv['title'] = title
+        self.mpv._set_property('title', title)
+        #self.mpv['title'] = title
         self.mpv.loadfile(vid, start=start)
 
     def toggle_pause(self) -> None:
-        self.mpv.pause = not self.mpv.pause
+        self.mpv._set_property(
+            'pause', not self.mpv.pause)
+        #self.mpv.pause = not self.mpv.pause
 
     def shutdown(self) -> None:
         """ Close player
