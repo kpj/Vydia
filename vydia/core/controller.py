@@ -155,7 +155,7 @@ class Controller:
 
     def save_state(self) -> None:
         if self.player is not None:
-            logger.info(f'Explicit state save')
+            logger.info('Explicit state save')
             assert self.current_playlist is not None
 
             # update current video
