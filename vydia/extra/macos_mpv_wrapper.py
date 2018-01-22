@@ -27,8 +27,9 @@ class MPVProxy:
 
         # setup MPV
         self.pipe = multiprocessing.Pipe()
-        multiprocessing.Process(
-            target=self._run, args=(self.pipe,)).start()
+        self.mpv_proc = multiprocessing.Process(
+            target=self._run, args=(self.pipe,))
+        self.mpv_proc.start()
 
         # poll pipe (handle data incoming from mpv-process)
         def handle_pipe():
@@ -45,7 +46,7 @@ class MPVProxy:
                         raise RuntimeError(f'Invalid property-type "{type_}"')
                 except EOFError:
                     break
-        threading.Thread(target=handle_pipe).start()
+        threading.Thread(target=handle_pipe, daemon=True).start()
 
     def __getattr__(self, cmd):
         def wrapper(*args, **kwargs):
@@ -58,6 +59,8 @@ class MPVProxy:
             elif cmd == 'register_event_callback':
                 func = args[0]
                 self.event_handler = func
+            elif cmd == 'terminate':
+                self.mpv_proc.terminate()
             else:
                 output_p, input_p = self.pipe
                 try:
@@ -118,7 +121,7 @@ class MPVProxy:
                     func(*args, **kwargs)
                 except EOFError:
                     break
-        threading.Thread(target=handle_pipe).start()
+        threading.Thread(target=handle_pipe, daemon=True).start()
 
         # run QT main-loop
         sys.exit(app.exec_())
