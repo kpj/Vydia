@@ -1,3 +1,4 @@
+import sys
 import time
 import shlex
 import logging
@@ -39,10 +40,7 @@ class Controller:
             self.view, unhandled_input=self._unhandled_input,
             palette=[('reversed', 'standout', '')])
 
-        logzero.loglevel(logging.ERROR)
-        logzero.logfile(
-            self.model.LOG_FILE,
-            maxBytes=1e6, backupCount=3, loglevel=logging.ERROR)
+        self._setup_logging()
 
     def __enter__(self) -> 'Controller':
         logger.info(f'Create controller')
@@ -55,6 +53,20 @@ class Controller:
         if self.player is not None:
             self.player_backend.shutdown()
         logger.info(f'Destroy controller')
+
+    def _setup_logging(self) -> None:
+        # init logzero
+        logzero.loglevel(logging.WARNING)
+        logzero.logfile(
+            self.model.LOG_FILE,
+            maxBytes=1e6, backupCount=3)
+
+        # enforce logging of unhandled exceptions
+        def handle_exception(exc_type, exc_value, exc_traceback):
+            logger.error(
+                'Uncaught exception',
+                exc_info=(exc_type, exc_value, exc_traceback))
+        sys.excepthook = handle_exception
 
     def main(self) -> None:
         self.view.show_playlist_overview()
