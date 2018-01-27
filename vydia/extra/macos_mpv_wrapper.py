@@ -14,6 +14,12 @@ class DummyWindow(QMainWindow):
         self.container.setAttribute(Qt.WA_DontCreateNativeAncestors)
         self.container.setAttribute(Qt.WA_NativeWindow)
 
+        # set window size
+        screen = QApplication.desktop().screenGeometry()
+        sw, sh = screen.width(), screen.height()
+        self.resize(sw // 3, sh // 3)
+
+        # save window ID (for access by MPV)
         self.window_id = str(int(self.container.winId()))
 
 class MPVProxy:
