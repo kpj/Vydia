@@ -50,6 +50,10 @@ class Playlist(List['Video']):
     def title(self) -> str:
         return self._title
 
+    @property
+    def duration(self) -> int:
+        return sum([v.duration for v in self])
+
     def reverse(self) -> None:
         tmp = self[:]
         self.clear()

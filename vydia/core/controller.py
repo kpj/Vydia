@@ -232,6 +232,7 @@ class PlayerQueue:
             state = self.controller.model._load_state()
             playlist_state = state[self.controller.current_playlist]
 
+            total_video_ts = 0
             self.item_list = []
             for vid in self.playlist:
                 vid_tit = vid.title
@@ -242,6 +243,7 @@ class PlayerQueue:
                     vid_ts = ts2sec(vid_info['current_timestamp'])
                 else:
                     vid_ts = 0
+                total_video_ts += vid_ts
                 vid_perc = round((vid_ts / vid_len) * 100)
 
                 cur = f'{vid_tit} ({sec2ts(vid_len)}, {vid_perc}% watched)'
@@ -250,7 +252,12 @@ class PlayerQueue:
             v = self.controller.view.widget
             assert v is not None, 'Widget has not been assembled'
 
-            v.set_title(self.playlist.title)
+            total_video_perc = round(
+                (total_video_ts / self.playlist.duration) * 100)
+            v.set_title(
+                f'{self.playlist.title} '
+                f'({sec2ts(self.playlist.duration)}, '
+                f'{total_video_perc}% watched)')
             v.set_items(self.item_list)
             self.controller.assemble_info_box()
 
