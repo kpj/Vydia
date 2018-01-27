@@ -244,7 +244,8 @@ class PlayerQueue:
                 else:
                     vid_ts = 0
                 total_video_ts += vid_ts
-                vid_perc = round((vid_ts / vid_len) * 100)
+                vid_perc = round((vid_ts / vid_len) * 100) \
+                    if vid_len > 0 else 0
 
                 cur = f'{vid_tit} ({sec2ts(vid_len)}, {vid_perc}% watched)'
                 self.item_list.append(cur)
@@ -253,7 +254,8 @@ class PlayerQueue:
             assert v is not None, 'Widget has not been assembled'
 
             total_video_perc = round(
-                (total_video_ts / self.playlist.duration) * 100)
+                (total_video_ts / self.playlist.duration) * 100) \
+                if self.playlist.duration > 0 else 0
             v.set_title(
                 f'{self.playlist.title} '
                 f'({sec2ts(self.playlist.duration)}, '
@@ -298,6 +300,10 @@ class PlayerQueue:
             start=start_pos)
 
     def play_next_video(self) -> None:
+        if self.current_vid is None:
+            self.controller.send_msg('No video selected, cannot play next')
+            return
+
         vid = self._get_video_relative(1)
         if vid is None:
             self.controller.send_msg('Reached end of playlist')
@@ -305,6 +311,10 @@ class PlayerQueue:
             self.play_video(vid)
 
     def play_previous_video(self) -> None:
+        if self.current_vid is None:
+            self.controller.send_msg('No video selected, cannot play previous')
+            return
+
         vid = self._get_video_relative(-1)
         if vid is None:
             self.controller.send_msg('Reached end of playlist')
