@@ -263,6 +263,10 @@ class PlayerQueue:
             state = self.controller.model._load_state()
             playlist_state = state[self.controller.current_playlist]
 
+            v = self.controller.view.widget
+            assert v is not None, 'Widget has not been assembled'
+
+            # adjust video title display
             total_video_ts = 0
             self.item_list = []
             cols, _ = self.controller.loop.screen.get_cols_rows()
@@ -284,8 +288,7 @@ class PlayerQueue:
                 cur = f'{vid_tit}{spaces} {sec2ts(vid_len):<10}{vid_perc:>3}%'
                 self.item_list.append(cur)
 
-            v = self.controller.view.widget
-            assert v is not None, 'Widget has not been assembled'
+            v.set_items(self.item_list)
 
             # set episode-view title
             total_video_perc = round(
@@ -297,7 +300,6 @@ class PlayerQueue:
                 f'{pl_tit}{spaces} '
                 f'{sec2ts(self.playlist.duration):<10}'
                 f'{total_video_perc:>3}%')
-            v.set_items(self.item_list)
             self.controller.assemble_info_box()
 
             # set list focus to video watched was played last
