@@ -178,6 +178,12 @@ class EpisodeOverview(BaseView):
             assert self.controller.player is not None
             self.controller.player_backend.toggle_pause()
             return None
+        elif key == 'w':
+            idx = self.vid_list.get_focus()[1]
+            entry_name = self.items[idx]
+
+            self.controller.mark_watched(entry_name)
+            return None
         else:
             return key
 

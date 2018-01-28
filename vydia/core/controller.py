@@ -149,6 +149,33 @@ class Controller:
         else:
             raise RuntimeError(f'Could not find video "{_cur["title"]}"')
 
+    def mark_watched(self, entry_name: str) -> None:
+        assert self.player is not None
+        assert self.player.playlist is not None
+        assert self.current_playlist is not None
+
+        vid_name = ' ('.join(entry_name.split(' (')[:-1])  # TODO: unhack me
+        _, vid = self.player.playlist.get_video_by_title(vid_name)
+        assert vid is not None
+
+        # mark as unwatched if already watched
+        new_ts = sec2ts(vid.duration)
+        _state = self.model.get_playlist_info(self.current_playlist)
+        if vid.title in _state['episodes']:
+            if _state['episodes'][vid.title]['current_timestamp'] == new_ts:
+                new_ts = sec2ts(0)
+
+        self.model.update_state(
+            self.current_playlist, {
+                'episodes': {
+                    vid.title: {
+                        'current_timestamp': new_ts
+                    }
+                }
+            })
+
+        self.player.setup(reload_playlist=False)
+
     def _init_player(self) -> None:
         self.player = PlayerQueue(self)
         self.player.setup()

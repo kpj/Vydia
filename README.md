@@ -50,6 +50,10 @@ The following commands are supported (in the correct context):
   * `continue`: continue playback from last save (`[c]`)
   * `quit`: quit Vydia (`[q]`)
 
+Furthermore, the following shortcuts exist:
+* Episode View:
+  * `w`: (un)mark currently selected video as watched
+
 ## Plugins
 
 * Filesystem
