@@ -2,6 +2,7 @@ import sys
 import time
 import shlex
 import logging
+import textwrap
 import threading
 
 import urwid
@@ -264,6 +265,7 @@ class PlayerQueue:
 
             total_video_ts = 0
             self.item_list = []
+            cols, _ = self.controller.loop.screen.get_cols_rows()
             for vid in self.playlist:
                 vid_tit = vid.title
                 vid_len = vid.duration
@@ -277,19 +279,24 @@ class PlayerQueue:
                 vid_perc = round((vid_ts / vid_len) * 100) \
                     if vid_len > 0 else 0
 
-                cur = f'{vid_tit} ({sec2ts(vid_len)}, {vid_perc}% watched)'
+                vid_tit = textwrap.shorten(vid_tit, cols-20)
+                spaces = ' ' * (cols - len(vid_tit) - 19)
+                cur = f'{vid_tit}{spaces} {sec2ts(vid_len):<10}{vid_perc:>3}%'
                 self.item_list.append(cur)
 
             v = self.controller.view.widget
             assert v is not None, 'Widget has not been assembled'
 
+            # set episode-view title
             total_video_perc = round(
                 (total_video_ts / self.playlist.duration) * 100) \
                 if self.playlist.duration > 0 else 0
+            pl_tit = textwrap.shorten(self.playlist.title, cols-20)
+            spaces = ' ' * (cols - len(pl_tit) - 17)
             v.set_title(
-                f'{self.playlist.title} '
-                f'({sec2ts(self.playlist.duration)}, '
-                f'{total_video_perc}% watched)')
+                f'{pl_tit}{spaces} '
+                f'{sec2ts(self.playlist.duration):<10}'
+                f'{total_video_perc:>3}%')
             v.set_items(self.item_list)
             self.controller.assemble_info_box()
 
