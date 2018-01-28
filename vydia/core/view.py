@@ -180,9 +180,9 @@ class EpisodeOverview(BaseView):
             return None
         elif key == 'w':
             idx = self.vid_list.get_focus()[1]
-            entry_name = self.items[idx]
-
-            self.controller.mark_watched(entry_name)
+            if idx is not None:
+                entry_name = self.items[idx]
+                self.controller.mark_watched(entry_name)
             return None
         else:
             return key
