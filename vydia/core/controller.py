@@ -178,7 +178,7 @@ class Controller:
 
     def _init_player(self) -> None:
         self.player = PlayerQueue(self)
-        self.player.setup()
+        self.player.setup(reset_position=True)
 
     def save_state(self) -> None:
         if self.player is not None:
@@ -244,7 +244,10 @@ class PlayerQueue:
         self.ts = None  # type: Optional[int]
         self.item_list = None  # type: Optional[List[str]]
 
-    def setup(self, reload_playlist: bool = True) -> None:
+    def setup(
+        self,
+        reload_playlist: bool = True, reset_position: bool = False
+    ) -> None:
         def tmp() -> None:
             if reload_playlist:
                 self.controller.send_msg('Loading...')
@@ -289,6 +292,16 @@ class PlayerQueue:
                 f'{total_video_perc}% watched)')
             v.set_items(self.item_list)
             self.controller.assemble_info_box()
+
+            # set list focus to video watched was played last
+            if reset_position:
+                assert self.controller.current_playlist is not None
+                _cur = self.controller.model.get_current_video(
+                    self.controller.current_playlist)
+                if _cur is not None:
+                    idx, _ = self.playlist.get_video_by_title(_cur['title'])
+                    v.vid_list.set_focus(idx)
+                    self.controller.update_views()
 
         t = threading.Thread(target=tmp)
         t.start()
