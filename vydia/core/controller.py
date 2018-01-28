@@ -311,7 +311,6 @@ class PlayerQueue:
             self.onVideoEnd()
 
     def onVideoEnd(self, play_next: bool = False) -> None:
-        self.controller.save_state()
         self.controller.assemble_info_box()
 
         if play_next:
@@ -320,6 +319,8 @@ class PlayerQueue:
         self.setup(reload_playlist=False)
 
     def play_video(self, vid: 'Video', start_pos: int = 0) -> None:
+        self.controller.save_state()
+        self.ts = start_pos
         self.current_vid = vid
 
         self.controller.player_backend.play_video(
