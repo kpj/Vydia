@@ -150,13 +150,12 @@ class Controller:
         else:
             raise RuntimeError(f'Could not find video "{_cur["title"]}"')
 
-    def mark_watched(self, entry_name: str) -> None:
+    def mark_watched(self, entry_idx: int) -> None:
         assert self.player is not None
         assert self.player.playlist is not None
         assert self.current_playlist is not None
 
-        vid_name = ' ('.join(entry_name.split(' (')[:-1])  # TODO: unhack me
-        _, vid = self.player.playlist.get_video_by_title(vid_name)
+        vid = self.player.playlist[entry_idx]
         assert vid is not None
 
         # mark as unwatched if already watched
