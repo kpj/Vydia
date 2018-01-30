@@ -1,9 +1,9 @@
 # Vydia
 
 [![PyPI](https://img.shields.io/pypi/v/vydia.svg?style=flat)](https://pypi.python.org/pypi/vydia)
+[![Build Status](https://img.shields.io/travis/kpj/vydia.svg?style=flat)](https://travis-ci.org/kpj/vydia)
 
 A modularized video player written in Python (supporting AirPlay).
-
 
 ![Vydia-gif](docs/vydia.gif)
 
