@@ -4,6 +4,10 @@
 
 A modularized video player written in Python (supporting AirPlay).
 
+
+![Vydia-gif](docs/vydia.gif)
+
+
 ## Installation
 
 ```bash
