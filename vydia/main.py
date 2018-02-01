@@ -44,16 +44,17 @@ def main(ctx: Any, video: bool, airplay: str) -> None:
             c.main()
 
 @main.command(help='Add new playlist by id.')
-@click.argument('playlist')
+@click.argument('playlist', nargs=-1, required=True)
 def add_playlist(playlist: str) -> None:
     from .core.model import Model
-    result = Model().add_new_playlist(playlist)
-    if result is None:
-        print('Playlist could not be added')
-        exit(-1)
 
-    title, plugin = result
-    print(f'Added "{title}" using {plugin}')
+    for pl in playlist:
+        result = Model().add_new_playlist(pl)
+        if result is None:
+            print(f'Playlist "{pl}" could not be added')
+        else:
+            title, plugin = result
+            print(f'Added "{title}" using {plugin}')
 
 @main.command(help='List available airplay devices.')
 def list_airplay_devices() -> None:
