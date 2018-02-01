@@ -10,7 +10,7 @@ from .extra.player import BasePlayer
 
 
 def get_player(airplay: str) -> BasePlayer:
-    """ Yield local of airplay Player, depending on given specification
+    """ Yield local or airplay Player, depending on given specification
     """
     player: BasePlayer
 

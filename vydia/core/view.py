@@ -71,15 +71,23 @@ class BaseView(ABC):
 
     @abstractmethod
     def build(self) -> urwid.WidgetWrap:
+        """ Generate widget from provided data
+        """
         pass
 
     def handle_select(self, button: int, choice: str) -> None:
+        """ Handle in-widget list selection
+        """
         pass
 
     def handle_input(self, key: str) -> Optional[str]:
+        """ Handle keypresses while widget is in focus
+        """
         pass
 
     def handle_command(self, cmd: str, args: List[Any]) -> None:
+        """ Handle input from the built-in commandline
+        """
         pass
 
 
