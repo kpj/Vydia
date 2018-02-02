@@ -176,6 +176,15 @@ class Controller:
 
         self.player.setup(reload_playlist=False)
 
+    def show_video_info(self, entry_idx: int) -> None:
+        assert self.player is not None
+        assert self.player.playlist is not None
+
+        vid = self.player.playlist[entry_idx]
+        assert vid is not None
+
+        self.view.show_long_text(vid.get_info())
+
     def _init_player(self) -> None:
         self.player = PlayerQueue(self)
         self.player.setup(reset_position=True)

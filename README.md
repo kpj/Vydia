@@ -46,6 +46,7 @@ The following commands are supported (in the correct context):
   * `quit`: quit Vydia (`[q]`)
 * Episode View:
   * `pause`: toggle pause in running episode (`<space>`)
+  * `info`: show video-related information (`i`)
   * `reload`: reload playlist using plugin
   * `reverse`: reverse episode order
   * `shuffle`: shuffle episode order

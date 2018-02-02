@@ -34,6 +34,28 @@ class View(urwid.Frame):
         w = EpisodeOverview(self.controller)
         self._activate_widget(w)
 
+    def show_overlay(self, widget: urwid.WidgetWrap) -> None:
+        cur_widget = self['body']
+
+        overlay = urwid.Overlay(
+            widget, cur_widget,
+            align='center', width=('relative', 75),
+            valign='middle', height=('relative', 75))
+
+        def handle_overlay_keypress(size: Tuple[int, int], key: str) -> None:
+            if key.lower() == 'i':
+                self.contents.update(body=(cur_widget, None))
+            else:
+                return widget.keypress(size, key)
+        overlay.keypress = handle_overlay_keypress
+
+        self.contents.update(body=(overlay, None))
+
+    def show_long_text(self, text: str) -> None:
+        w = urwid.Frame(urwid.LineBox(
+            urwid.Filler(urwid.Text(text), valign='top')))
+        self.show_overlay(w)
+
     def show_cmdline(self) -> None:
         def return_callback(key: str) -> None:
             self.controller.handle_cmdline_input(key)
@@ -191,6 +213,11 @@ class EpisodeOverview(BaseView):
             if idx is not None:
                 self.controller.mark_watched(idx)
             return None
+        elif key == 'i':
+            idx = self.vid_list.get_focus()[1]
+            if idx is not None:
+                self.controller.show_video_info(idx)
+            return None
         else:
             return key
 
@@ -241,3 +268,7 @@ class EpisodeOverview(BaseView):
         elif cmd in ('pause',):
             assert self.controller.player is not None
             self.controller.player_backend.toggle_pause()
+        elif cmd in ('info',):
+            idx = self.vid_list.get_focus()[1]
+            if idx is not None:
+                self.controller.show_video_info(idx)

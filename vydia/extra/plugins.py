@@ -11,28 +11,46 @@ from typing import Any, List, Tuple, Optional, Type, Callable
 
 import pafy
 
+from hachoir.parser import createParser
+from hachoir.metadata import extractMetadata
+
 from .utils import get_video_duration
 
 
 VideoData = collections.namedtuple(
-    'VideoData', ['title', 'duration', 'get_file_stream']
-)  # type: Tuple[str, int, Callable[[], str]]
+    'VideoData', ['title', 'duration', 'get_file_stream', 'get_info']
+)  # type: Tuple[str, int, Callable[[], str], Callable[[], str]]
 
 class Video(object):
     @classmethod
     def from_pafy(cls: Type['Video'], obj: Any) -> 'Video':
+        def format_info() -> str:
+            return f'Title: {obj.title}' + \
+                f'Author: {obj.author}' + \
+                f'Description: {obj.description}'
+
         return cls(VideoData(
             title=obj.title,
             duration=obj.length,
-            get_file_stream=lambda: obj.getbest().url
+            get_file_stream=lambda: obj.getbest().url,
+            get_info=format_info
         ))
 
     @classmethod
     def from_filepath(cls: Type['Video'], path: str) -> 'Video':
+        def format_info() -> str:
+            with createParser(path) as parser:
+                try:
+                    metadata = extractMetadata(parser)
+                except Exception as err:
+                    return f'No video-data found ({err})'
+            return '\n'.join(metadata.exportPlaintext())
+
         return cls(VideoData(
             title=os.path.basename(path),
             duration=get_video_duration(path),
-            get_file_stream=lambda: path
+            get_file_stream=lambda: path,
+            get_info=format_info
         ))
 
     def __init__(self, obj: VideoData) -> None:
