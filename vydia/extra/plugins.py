@@ -25,8 +25,8 @@ class Video(object):
     @classmethod
     def from_pafy(cls: Type['Video'], obj: Any) -> 'Video':
         def format_info() -> str:
-            return f'Title: {obj.title}' + \
-                f'Author: {obj.author}' + \
+            return f'Title: {obj.title}\n' + \
+                f'Author: {obj.author}\n' + \
                 f'Description: {obj.description}'
 
         return cls(VideoData(
