@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='vydia',
-    version='0.6.0',
+    version='0.6.1',
 
     description='A modularized video player with resume function',
 
