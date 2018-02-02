@@ -21,6 +21,40 @@ if TYPE_CHECKING:
     from ..extra.plugins import Video, Playlist
 
 
+HELP_TEXT = '''
+__     __         _ _
+\ \   / /   _  __| (_) __ _
+ \ \ / / | | |/ _` | |/ _` |
+  \ V /| |_| | (_| | | (_| |
+   \_/  \__, |\__,_|_|\__,_|
+        |___/
+Help Page
+=========
+
+The following commands are supported (in the correct context):
+* Playlist View:
+  * `add <playlist id>`: add given playlist
+  * `delete`: delete currently selected playlist
+  * `quit`: quit Vydia (`[q]`)
+* Episode View:
+  * `pause`: toggle pause in running episode (`<space>`)
+  * `info`: show video-related information (`i`)
+  * `reload`: reload playlist using plugin
+  * `reverse`: reverse episode order
+  * `shuffle`: shuffle episode order
+  * `next`: play next video (`[>]`)
+  * `previous`: play previous video (`[<]`)
+  * `continue`: continue playback from last save (`[c]`)
+  * `quit`: quit Vydia (`[q]`)
+
+Furthermore, the following shortcuts exist:
+* Episode View:
+  * `w`: (un)mark currently selected video as watched
+
+Also, try executing `vydia --help`.
+'''
+
+
 class Controller:
     def __init__(
         self,
@@ -76,10 +110,12 @@ class Controller:
     def _unhandled_input(self, key: str) -> None:
         if key in ('Q', 'q', 'esc'):
             raise urwid.ExitMainLoop()
-
-        if key == ':':
+        elif key == ':':
             self.view.show_cmdline()
-            return
+            return None
+        elif key == 'h':
+            self.show_helpscreen()
+            return None
 
     def handle_cmdline_input(self, msg: str) -> None:
         if len(msg) == 0:
@@ -183,7 +219,10 @@ class Controller:
         vid = self.player.playlist[entry_idx]
         assert vid is not None
 
-        self.view.show_long_text(vid.get_info())
+        self.view.show_long_text(vid.get_info(), exit_key='i')
+
+    def show_helpscreen(self) -> None:
+        self.view.show_long_text(HELP_TEXT, exit_key='h')
 
     def _init_player(self) -> None:
         self.player = PlayerQueue(self)

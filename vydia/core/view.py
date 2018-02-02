@@ -34,7 +34,7 @@ class View(urwid.Frame):
         w = EpisodeOverview(self.controller)
         self._activate_widget(w)
 
-    def show_overlay(self, widget: urwid.WidgetWrap) -> None:
+    def show_overlay(self, widget: urwid.WidgetWrap, exit_key: str) -> None:
         cur_widget = self['body']
 
         overlay = urwid.Overlay(
@@ -43,7 +43,7 @@ class View(urwid.Frame):
             valign='middle', height=('relative', 75))
 
         def handle_overlay_keypress(size: Tuple[int, int], key: str) -> None:
-            if key.lower() == 'i':
+            if key.lower() == exit_key:
                 self.contents.update(body=(cur_widget, None))
             else:
                 return widget.keypress(size, key)
@@ -51,10 +51,10 @@ class View(urwid.Frame):
 
         self.contents.update(body=(overlay, None))
 
-    def show_long_text(self, text: str) -> None:
+    def show_long_text(self, text: str, exit_key: str) -> None:
         w = urwid.Frame(urwid.LineBox(
             urwid.Filler(urwid.Text(text), valign='top')))
-        self.show_overlay(w)
+        self.show_overlay(w, exit_key)
 
     def show_cmdline(self) -> None:
         def return_callback(key: str) -> None:
@@ -134,7 +134,10 @@ class PlaylistOverview(BaseView):
         self.main_list = urwid.SimpleFocusListWalker(body)
         item_list = urwid.ListBox(self.main_list)
 
-        return urwid.Frame(item_list, header=urwid.Text(self.title))
+        return urwid.Frame(
+            item_list,
+            header=urwid.Text(self.title),
+            footer=urwid.Text('Press [h] for help.'))
 
     def handle_command(self, cmd: str, args: List[Any]) -> None:
         if cmd in ('delete',):

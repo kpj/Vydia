@@ -39,6 +39,8 @@ Commands:
 ```
 
 Additionally, an internal commandline can be summoned by typing `:`.
+Also, pressing `h` shows a help page.
+
 The following commands are supported (in the correct context):
 * Playlist View:
   * `add <playlist id>`: add given playlist
