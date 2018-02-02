@@ -27,6 +27,7 @@ class Video(object):
         def format_info() -> str:
             return f'Title: {obj.title}\n' + \
                 f'Author: {obj.author}\n' + \
+                f'Published: {obj.published}\n' + \
                 f'Description: {obj.description}'
 
         return cls(VideoData(
