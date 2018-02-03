@@ -43,6 +43,8 @@ class Model:
         return _state[pid].get('current', None)
 
     def add_new_playlist(self, plid: str) -> Optional[Tuple[str, str]]:
+        plid = os.path.abspath(plid)
+
         try:
             plugin_name, pl = load_playlist(plid)
         except ValueError:
