@@ -73,9 +73,6 @@ class AirPlayer(BasePlayer):
                 assert self.controller.player is not None
                 assert self.controller.player.current_vid is not None
 
-                with open('/tmp/foo.txt', 'a') as fd:
-                    print('EVENT', event, file=fd)
-
                 # AirPlay does not understand the difference between
                 # force-stopping and gracefully ending a video when
                 # it is over. Here, this is approximated by checking
