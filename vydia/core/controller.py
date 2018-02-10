@@ -329,6 +329,7 @@ class PlayerQueue:
                 total_video_ts += vid_ts
                 vid_perc = round((vid_ts / vid_len) * 100) \
                     if vid_len > 0 else 0
+                vid_perc = min(vid_perc, 100)
 
                 vid_tit = textwrap.shorten(vid_tit, cols-20)
                 spaces = ' ' * (cols - len(vid_tit) - 19)
@@ -341,6 +342,7 @@ class PlayerQueue:
             total_video_perc = round(
                 (total_video_ts / self.playlist.duration) * 100) \
                 if self.playlist.duration > 0 else 0
+            total_video_p = min(total_video_perc, 100)
             pl_tit = textwrap.shorten(self.playlist.title, cols-20)
             spaces = ' ' * (cols - len(pl_tit) - 17)
             v.set_title(
