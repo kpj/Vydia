@@ -2,19 +2,19 @@ import os
 
 import pytest
 
-import vydia
+from ..core.model import Model
 
 
 @pytest.fixture
-def model(tmpdir: str) -> vydia.core.Model:
+def model(tmpdir: str) -> Model:
     cfg = os.path.join(tmpdir, 'state.json')
     log = os.path.join(tmpdir, 'log.txt')
 
-    m = vydia.core.Model(state_fname=cfg, log_fname=log)
+    m = Model(state_fname=cfg, log_fname=log)
     return m
 
 
-def test_state_update(model: vydia.core.Model) -> None:
+def test_state_update(model: Model) -> None:
     assert model._load_state() == {}
 
     model.update_state('pl01', {'id': '123'})
