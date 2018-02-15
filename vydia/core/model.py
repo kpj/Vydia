@@ -43,15 +43,13 @@ class Model:
         return _state[pid].get('current', None)
 
     def add_new_playlist(self, plid: str) -> Optional[Tuple[str, str]]:
-        plid = os.path.abspath(plid)
-
         try:
             plugin_name, pl = load_playlist(plid)
         except ValueError:
             print(f'No plugin found for "{plid}"')
             return None
 
-        self.update_state(pl.title, {'id': plid, 'episodes': {}})
+        self.update_state(pl.title, {'id': pl.id, 'episodes': {}})
         return pl.title, plugin_name
 
     def update_state(

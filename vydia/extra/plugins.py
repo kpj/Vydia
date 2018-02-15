@@ -62,8 +62,16 @@ class Video(object):
 
 class Playlist(List['Video']):
     def __init__(self) -> None:
+        self._id = None
         self._title = ''
         super().__init__()
+
+    @property
+    def id(self) -> str:
+        if self._id is None:
+            raise RuntimeError('Id not yet set.')
+
+        return self._id
 
     @property
     def title(self) -> str:
@@ -110,6 +118,7 @@ class FilesystemPlugin(BasePlugin):
             return None
 
         pl = Playlist()
+        pl._id = url
         pl._title = url
 
         paths = []
@@ -131,6 +140,7 @@ class YoutubePlugin(BasePlugin):
         except ValueError:
             return None
         pl = Playlist()
+        pl._id = url
 
         pl._title = res.title
         for vid in res:
