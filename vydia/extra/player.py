@@ -150,6 +150,7 @@ class LocalPlayer(BasePlayer):
         if sys.platform == 'darwin':  # is macOS
             from .macos_mpv_wrapper import MPVProxy
             mpv = MPVProxy(
+                input_default_bindings=True, input_vo_keyboard=True,
                 ytdl=True,
                 **optional_opts)
         else:

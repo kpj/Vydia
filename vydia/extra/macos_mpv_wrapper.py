@@ -22,6 +22,24 @@ class DummyWindow(QMainWindow):
         # save window ID (for access by MPV)
         self.window_id = str(int(self.container.winId()))
 
+        # keep player reference to forward key-presses
+        self._player_ref = None
+
+    def keyPressEvent(self, event):
+        #return self.container.keyPressEvent(event)
+
+        # TODO: fix this horrible workaround
+        key = event.text()
+        self.player.command('keypress', key)
+
+    @property
+    def player(self):
+        return self._player_ref
+
+    @player.setter
+    def player(self, value):
+        self._player_ref = value
+
 class MPVProxy:
     def __init__(self, *args, **kwargs):
         self.mpv_args = args
@@ -87,6 +105,7 @@ class MPVProxy:
         mpv._mpv_set_option_string(
             player.handle,
             'wid'.encode('utf-8'), win.window_id.encode('utf-8'))
+        win.player = player
 
         # send time-position to parent process
         def handle_time(prop_name, pos):
