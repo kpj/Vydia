@@ -25,6 +25,7 @@ def get_player(airplay: str) -> BasePlayer:
 
     return player
 
+
 @click.group(invoke_without_command=True)
 @click.option(
     '--video/--no-video', default=True,
@@ -43,6 +44,7 @@ def main(ctx: Any, video: bool, airplay: str) -> None:
         with Controller(get_player(airplay), config) as c:
             c.main()
 
+
 @main.command(help='Add new playlist by id.')
 @click.argument('playlist', nargs=-1, required=True)
 def add_playlist(playlist: str) -> None:
@@ -56,12 +58,14 @@ def add_playlist(playlist: str) -> None:
             title, plugin = result
             print(f'Added "{title}" using {plugin}')
 
+
 @main.command(help='List available airplay devices.')
 def list_airplay_devices() -> None:
     from airplay import AirPlay
     for i, ap in enumerate(AirPlay.find(fast=False)):
         info = ap.server_info()
         print(f'#{i+1}: {ap.host}:{ap.port} ({info["model"]})')
+
 
 if __name__ == '__main__':
     main()

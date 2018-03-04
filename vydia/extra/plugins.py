@@ -5,9 +5,9 @@ Plugins for video backends
 import os
 import random
 import collections
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 
-from typing import Any, List, Tuple, Optional, Type, Callable
+from typing import Any, List, Tuple, Optional, Type, Callable  # noqa: F401
 
 import pafy
 
@@ -20,6 +20,7 @@ from .utils import get_video_duration
 VideoData = collections.namedtuple(
     'VideoData', ['title', 'duration', 'get_file_stream', 'get_info']
 )  # type: Tuple[str, int, Callable[[], str], Callable[[], str]]
+
 
 class Video(object):
     @classmethod
@@ -59,6 +60,7 @@ class Video(object):
 
     def __getattr__(self, key: str) -> Any:
         return self._obj._asdict()[key]
+
 
 class Playlist(List['Video']):
     def __init__(self) -> None:
@@ -104,12 +106,14 @@ class Playlist(List['Video']):
                 return i, vid
         return None, None
 
+
 class BasePlugin(ABC):
     @abstractmethod
     def extract_playlist(self, url: str) -> Optional[Playlist]:
         """ Return playlist object
             None if invalid url
         """
+
 
 class FilesystemPlugin(BasePlugin):
     def extract_playlist(self, url: str) -> Optional[Playlist]:
@@ -132,6 +136,7 @@ class FilesystemPlugin(BasePlugin):
             pl.append(Video.from_filepath(fp))
 
         return pl
+
 
 class YoutubePlugin(BasePlugin):
     def extract_playlist(self, url: str) -> Optional[Playlist]:

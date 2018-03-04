@@ -8,10 +8,11 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
-    from ..core.controller import Controller
+    from ..core.controller import Controller  # noqa: F401
 
 
 PlayerEvent = enum.Enum('PlayerEvent', 'VIDEO_OVER VIDEO_QUIT')
+
 
 class BasePlayer(ABC):
     @abstractmethod
@@ -37,6 +38,7 @@ class BasePlayer(ABC):
 
     def set_controller(self, controller: 'Controller') -> None:
         self.controller = controller
+
 
 class AirPlayer(BasePlayer):
     def __init__(self, ip: str, port: int) -> None:
@@ -121,6 +123,7 @@ class AirPlayer(BasePlayer):
     def shutdown(self) -> None:
         self.ap.stop()
 
+
 class LocalPlayer(BasePlayer):
     def setup(
         self,
@@ -176,16 +179,16 @@ class LocalPlayer(BasePlayer):
                 self.event_callback(PlayerEvent.VIDEO_QUIT)
 
     def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
-        #self.mpv.command('stop')
+        # self.mpv.command('stop')
         self.mpv.playlist_clear()
         self.mpv._set_property('title', title)
-        #self.mpv['title'] = title
+        # self.mpv['title'] = title
         self.mpv.loadfile(vid, start=start)
 
     def toggle_pause(self) -> None:
         self.mpv._set_property(
             'pause', not self.mpv.pause)
-        #self.mpv.pause = not self.mpv.pause
+        # self.mpv.pause = not self.mpv.pause
 
     def shutdown(self) -> None:
         """ Close player
@@ -202,6 +205,7 @@ class LocalPlayer(BasePlayer):
         """
         self.mpv.wait_for_property('filename', lambda x: x is None)
 
+
 if __name__ == '__main__':
     def _print_time(time: float) -> None:
         if time is not None:
@@ -213,7 +217,7 @@ if __name__ == '__main__':
     pl = LocalPlayer()
     pl.setup(_print_time, _print_event)
 
-    #pl.play_video('..')
-    #pl.queue_video('..')
+    # pl.play_video('..')
+    # pl.queue_video('..')
 
     pl.join()

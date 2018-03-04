@@ -1,5 +1,4 @@
 import sys
-import time
 import shlex
 import logging
 import textwrap
@@ -10,7 +9,7 @@ import urwid
 import logzero
 from logzero import logger
 
-from typing import Any, Iterable, Optional, Dict, List, TYPE_CHECKING
+from typing import Any, Iterable, Optional, Dict, TYPE_CHECKING
 
 from .model import Model
 from .view import View
@@ -18,7 +17,7 @@ from ..extra.player import PlayerEvent, BasePlayer
 from ..extra.utils import load_playlist, sec2ts, ts2sec
 
 if TYPE_CHECKING:
-    from ..extra.plugins import Video, Playlist
+    from ..extra.plugins import Video, Playlist  # noqa: F401
 
 
 HELP_TEXT = '''
@@ -275,6 +274,7 @@ class Controller:
 
         self.loop.draw_screen()
 
+
 class PlayerQueue:
     def __init__(self, controller: Controller) -> None:
         self.controller = controller
@@ -342,7 +342,7 @@ class PlayerQueue:
             total_video_perc = round(
                 (total_video_ts / self.playlist.duration) * 100) \
                 if self.playlist.duration > 0 else 0
-            total_video_p = min(total_video_perc, 100)
+            total_video_perc = min(total_video_perc, 100)
             pl_tit = textwrap.shorten(self.playlist.title, cols-20)
             spaces = ' ' * (cols - len(pl_tit) - 17)
             v.set_title(

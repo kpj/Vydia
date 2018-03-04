@@ -5,10 +5,8 @@ from typing import Optional, Tuple, Any, List, TYPE_CHECKING
 import urwid
 import urwid_readline
 
-from logzero import logger
-
 if TYPE_CHECKING:
-    from .controller import Controller
+    from .controller import Controller  # noqa: F401
 
 
 class View(urwid.Frame):
@@ -70,6 +68,7 @@ class View(urwid.Frame):
         self.contents.update(footer=(None, None))
         self.focus_position = 'body'
 
+
 class CmdlineView(urwid_readline.ReadlineEdit):
     def __init__(
         self, *args: Any,
@@ -85,6 +84,7 @@ class CmdlineView(urwid_readline.ReadlineEdit):
                 if self._callback is not None else None
 
         super().keypress(size, key)
+
 
 class BaseView(ABC):
     def __init__(self, title: str, items: List[str]) -> None:
@@ -153,6 +153,7 @@ class PlaylistOverview(BaseView):
             for pl_name in args:
                 self.controller.model.add_new_playlist(pl_name)
             self.controller.view.show_playlist_overview()
+
 
 class EpisodeOverview(BaseView):
     def __init__(self, controller: 'Controller') -> None:

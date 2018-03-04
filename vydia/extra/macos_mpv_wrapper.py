@@ -26,7 +26,7 @@ class DummyWindow(QMainWindow):
         self._player_ref = None
 
     def keyPressEvent(self, event):
-        #return self.container.keyPressEvent(event)
+        # return self.container.keyPressEvent(event)
 
         # TODO: fix this horrible workaround
         key = event.text()
@@ -39,6 +39,7 @@ class DummyWindow(QMainWindow):
     @player.setter
     def player(self, value):
         self._player_ref = value
+
 
 class MPVProxy:
     def __init__(self, *args, **kwargs):
@@ -124,7 +125,8 @@ class MPVProxy:
                 'event': {}
             }
             if event['event'] is not None:
-                sane_event['event']['reason'] = event['event'].get('reason', None)
+                ev_reason = event['event'].get('reason', None)
+                sane_event['event']['reason'] = ev_reason
 
             output_p.send(('event', sane_event))
         player.register_event_callback(handle_event)
@@ -166,6 +168,7 @@ def main():
     time.sleep(2)
     mp.play('test.webm')
     print('End')
+
 
 if __name__ == '__main__':
     main()

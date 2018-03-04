@@ -5,7 +5,7 @@ import collections
 from pathlib import Path
 from appdirs import AppDirs
 
-from typing import Any, Union, Optional, Iterable, Dict, List, Tuple
+from typing import Any, Optional, Iterable, Dict, Tuple
 
 from ..extra.utils import nested_dict_update, load_playlist
 
