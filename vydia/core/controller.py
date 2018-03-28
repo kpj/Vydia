@@ -30,6 +30,9 @@ __     __         _ _
 Help Page
 =========
 
+Summon the internal commandline by typing `:`.
+Press `[TAB]` for autocomplete.
+
 The following commands are supported (in the correct context):
 * Playlist View:
   * `add <playlist id>`: add given playlist

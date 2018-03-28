@@ -77,6 +77,13 @@ class CmdlineView(urwid_readline.ReadlineEdit):
         super().__init__(*args, **kwargs)
         self._callback = callback
 
+        self.command_list = list(sorted([
+            'add', 'delete', 'quit',
+            'pause', 'info', 'reload', 'reverse', 'shuffle',
+            'next', 'previous', 'continue'
+        ]))
+        self.enable_autocomplete(self.autocomplete_func)
+
     def keypress(self, size: Tuple[int, int], key: str) -> None:
         if key == 'enter':
             urwid.emit_signal(self, 'done', self, self.get_edit_text())
@@ -84,6 +91,17 @@ class CmdlineView(urwid_readline.ReadlineEdit):
                 if self._callback is not None else None
 
         super().keypress(size, key)
+
+    def autocomplete_func(self, text: str, state: str) -> Optional[str]:
+        if text:  # someone typed something
+            tmp = [c for c in self.command_list if c and c.startswith(text)]
+        else:
+            tmp = self.command_list
+
+        try:
+            return tmp[state]
+        except IndexError:
+            return None
 
 
 class BaseView(ABC):

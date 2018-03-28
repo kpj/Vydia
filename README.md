@@ -38,7 +38,7 @@ Commands:
   list_airplay_devices  List available airplay devices.
 ```
 
-Additionally, an internal commandline can be summoned by typing `:`.
+Additionally, an internal commandline can be summoned by typing `:` (note: it supports autocompletion using `[TAB]`).
 Also, pressing `h` shows a help page.
 
 The following commands are supported (in the correct context):
