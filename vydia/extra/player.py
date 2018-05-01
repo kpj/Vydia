@@ -36,6 +36,10 @@ class BasePlayer(ABC):
     def shutdown(self) -> None:
         pass
 
+    @abstractmethod
+    def display_text(self, txt: str, duration: int = 1000) -> None:
+        pass
+
     def set_controller(self, controller: 'Controller') -> None:
         self.controller = controller
 
@@ -123,6 +127,11 @@ class AirPlayer(BasePlayer):
     def shutdown(self) -> None:
         self.ap.stop()
 
+    def display_text(self, txt: str, duration: int = 1000) -> None:
+        """ Does not seem possible
+        """
+        pass
+
 
 class LocalPlayer(BasePlayer):
     def setup(
@@ -194,6 +203,9 @@ class LocalPlayer(BasePlayer):
         """ Close player
         """
         self.mpv.terminate()
+
+    def display_text(self, txt: str, duration: int = 1000) -> None:
+        self.mpv.show_text(txt, duration=duration)
 
     def queue_video(self, vid: str) -> None:
         plc = int(self.mpv._get_property('playlist-count'))

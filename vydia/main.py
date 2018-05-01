@@ -31,12 +31,16 @@ def get_player(airplay: str) -> BasePlayer:
     '--video/--no-video', default=True,
     help='Suppress mpv video output.')
 @click.option(
+    '--titles/--no-titles', default=True,
+    help='Display title at beginning of each video.')
+@click.option(
     '--airplay', default='',
     help='Use airplay server if specified (format: "<ip>:<port>").')
 @click.pass_context
-def main(ctx: Any, video: bool, airplay: str) -> None:
+def main(ctx: Any, video: bool, titles: bool, airplay: str) -> None:
     config = {
-        'show_video': video
+        'show_video': video,
+        'show_titles': titles
     }
 
     if ctx.invoked_subcommand is None:

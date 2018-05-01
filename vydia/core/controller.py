@@ -401,6 +401,10 @@ class PlayerQueue:
             vid.get_file_stream(), vid.title,
             start=start_pos)
 
+        if self.controller.config['show_titles']:
+            self.controller.player_backend.display_text(
+                vid.title, min(3000, vid.duration*1000))
+
     def play_next_video(self) -> None:
         if self.current_vid is None:
             self.controller.send_msg('No video selected, cannot play next')
