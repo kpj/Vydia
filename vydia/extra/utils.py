@@ -61,13 +61,9 @@ def nested_dict_update(
     for k, v in update_data.items():
         if isinstance(v, dict):
             old_val = cur_dict.get(k, {})
-            if isinstance(old_val, dict):
-                r = nested_dict_update(old_val, v)
-            else:
-                r = v
-            cur_dict[k] = r
+            cur_dict[k] = nested_dict_update(old_val, v) if isinstance(old_val, dict) else v
         else:
-            cur_dict[k] = update_data[k]
+            cur_dict[k] = v
     return cur_dict
 
 
