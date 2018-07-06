@@ -69,3 +69,10 @@ def nested_dict_update(
         else:
             cur_dict[k] = update_data[k]
     return cur_dict
+
+
+def shorten_msg(text: str, width: int, suffix: str = '[...]') -> str:
+    if len(text) <= width:
+        return text
+    else:
+        return text[:width-len(suffix)] + suffix

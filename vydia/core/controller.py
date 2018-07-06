@@ -1,7 +1,6 @@
 import sys
 import shlex
 import logging
-import textwrap
 import threading
 
 import urwid
@@ -14,7 +13,7 @@ from typing import Any, Iterable, Optional, Dict, TYPE_CHECKING
 from .model import Model
 from .view import View
 from ..extra.player import PlayerEvent, BasePlayer
-from ..extra.utils import load_playlist, sec2ts, ts2sec
+from ..extra.utils import load_playlist, sec2ts, ts2sec, shorten_msg
 
 if TYPE_CHECKING:
     from ..extra.plugins import Video, Playlist  # noqa: F401
@@ -334,7 +333,7 @@ class PlayerQueue:
                     if vid_len > 0 else 0
                 vid_perc = min(vid_perc, 100)
 
-                vid_tit = textwrap.shorten(vid_tit, cols-20)
+                vid_tit = shorten_msg(vid_tit, cols-20)
                 spaces = ' ' * (cols - len(vid_tit) - 19)
                 cur = f'{vid_tit}{spaces} {sec2ts(vid_len):<10}{vid_perc:>3}%'
                 self.item_list.append(cur)
@@ -346,7 +345,7 @@ class PlayerQueue:
                 (total_video_ts / self.playlist.duration) * 100) \
                 if self.playlist.duration > 0 else 0
             total_video_perc = min(total_video_perc, 100)
-            pl_tit = textwrap.shorten(self.playlist.title, cols-20)
+            pl_tit = shorten_msg(self.playlist.title, cols-20)
             spaces = ' ' * (cols - len(pl_tit) - 17)
             v.set_title(
                 f'{pl_tit}{spaces} '
