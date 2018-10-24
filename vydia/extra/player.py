@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
+    import mpv
     from ..core.controller import Controller  # noqa: F401
 
 

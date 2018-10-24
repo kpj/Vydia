@@ -13,7 +13,8 @@ def get_player(remote: str) -> BasePlayer:
     """ Yield local or airplay Player, depending on given specification
     """
     player: BasePlayer
-    server_type, url = remote.split('::') if len(remote) > 0 else ('local', None)
+    server_type, url = (remote.split('::')
+                        if len(remote) > 0 else ('local', None))
 
     if server_type == 'local':
         from .extra.player import LocalPlayer
@@ -41,7 +42,8 @@ def get_player(remote: str) -> BasePlayer:
     help='Display title at beginning of each video.')
 @click.option(
     '--remote', default='',
-    help='Use remote server if specified (format: "airplay::<ip>:<port>", "dlna::<url>").')
+    help='Use remote server if specified '
+         '(format: "airplay::<ip>:<port>", "dlna::<url>").')
 @click.pass_context
 def main(ctx: Any, video: bool, titles: bool, remote: str) -> None:
     config = {
@@ -75,6 +77,7 @@ def list_airplay_devices() -> None:
     for i, ap in enumerate(AirPlay.find(fast=False)):
         info = ap.server_info()
         print(f'#{i+1}: {ap.host}:{ap.port} ({info["model"]})')
+
 
 @main.command(help='List available DLNA devices.')
 def list_dlna_devices() -> None:

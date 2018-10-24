@@ -39,7 +39,7 @@ def get_video_duration(fname: str) -> int:
     with createParser(fname) as parser:
         try:
             metadata = extractMetadata(parser)
-        except Exception as err:
+        except Exception:
             return -1
 
     return metadata.get('duration').seconds
@@ -61,7 +61,8 @@ def nested_dict_update(
     for k, v in update_data.items():
         if isinstance(v, dict):
             old_val = cur_dict.get(k, {})
-            cur_dict[k] = nested_dict_update(old_val, v) if isinstance(old_val, dict) else v
+            cur_dict[k] = (nested_dict_update(old_val, v)
+                           if isinstance(old_val, dict) else v)
         else:
             cur_dict[k] = v
     return cur_dict
