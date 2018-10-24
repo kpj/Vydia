@@ -2,6 +2,7 @@ import os
 import sys
 import enum
 import time
+import urllib
 import threading
 from abc import ABC, abstractmethod
 
@@ -216,6 +217,49 @@ class LocalPlayer(BasePlayer):
         """ Wait for playlist to finish
         """
         self.mpv.wait_for_property('filename', lambda x: x is None)
+
+
+class DLNAPlayer(BasePlayer):
+    def __init__(self, url: str) -> None:
+        self.url = url
+
+    def setup(
+        self,
+        time_callback: Callable[[float], None],
+        event_callback: Callable[[PlayerEvent], None],
+        disable_video: bool = False
+    ) -> None:
+        self.time_callback = time_callback
+        self.event_callback = event_callback
+
+        if disable_video:
+            raise RuntimeError('Disabling video not supported with DLNA.')
+
+        from nanodlna import dlna, devices, streaming
+
+        self.device = devices.register_device(self.url)
+        serve_ip = streaming.get_serve_ip(self.device['hostname'])
+        self.server = streaming.start_server(serve_ip)
+
+        self.dlna = dlna
+
+    def play_video(self, vid: str, title: str = '', start: int = 0) -> None:
+        files_urls = self.server.add_entry('file_video', vid)
+
+        try:
+            self.dlna.play(files_urls, self.device)
+        except urllib.error.HTTPError:
+            # TODO: why is this happening? I have no idea...
+            pass
+
+    def toggle_pause(self) -> None:
+        pass
+
+    def shutdown(self) -> None:
+        self.server.stop()
+
+    def display_text(self, txt: str, duration: int = 1000) -> None:
+        pass
 
 
 if __name__ == '__main__':

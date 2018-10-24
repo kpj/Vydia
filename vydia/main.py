@@ -9,19 +9,25 @@ import click
 from .extra.player import BasePlayer
 
 
-def get_player(airplay: str) -> BasePlayer:
+def get_player(remote: str) -> BasePlayer:
     """ Yield local or airplay Player, depending on given specification
     """
     player: BasePlayer
+    server_type, url = remote.split('::') if len(remote) > 0 else ('local', None)
 
-    if airplay:
-        host, port = airplay.split(':')
+    if server_type == 'local':
+        from .extra.player import LocalPlayer
+        player = LocalPlayer()
+    elif server_type.lower() == 'airplay':
+        host, port = url.split(':')
 
         from .extra.player import AirPlayer
         player = AirPlayer(host, int(port))
+    elif server_type.lower() == 'dlna':
+        from .extra.player import DLNAPlayer
+        player = DLNAPlayer(url)
     else:
-        from .extra.player import LocalPlayer
-        player = LocalPlayer()
+        raise RuntimeError(f'Invalid player specification "{remote}"')
 
     return player
 
@@ -34,10 +40,10 @@ def get_player(airplay: str) -> BasePlayer:
     '--titles/--no-titles', default=True,
     help='Display title at beginning of each video.')
 @click.option(
-    '--airplay', default='',
-    help='Use airplay server if specified (format: "<ip>:<port>").')
+    '--remote', default='',
+    help='Use remote server if specified (format: "airplay::<ip>:<port>", "dlna::<url>").')
 @click.pass_context
-def main(ctx: Any, video: bool, titles: bool, airplay: str) -> None:
+def main(ctx: Any, video: bool, titles: bool, remote: str) -> None:
     config = {
         'show_video': video,
         'show_titles': titles
@@ -45,7 +51,7 @@ def main(ctx: Any, video: bool, titles: bool, airplay: str) -> None:
 
     if ctx.invoked_subcommand is None:
         from .core.controller import Controller
-        with Controller(get_player(airplay), config) as c:
+        with Controller(get_player(remote), config) as c:
             c.main()
 
 
@@ -69,6 +75,12 @@ def list_airplay_devices() -> None:
     for i, ap in enumerate(AirPlay.find(fast=False)):
         info = ap.server_info()
         print(f'#{i+1}: {ap.host}:{ap.port} ({info["model"]})')
+
+@main.command(help='List available DLNA devices.')
+def list_dlna_devices() -> None:
+    from nanodlna import devices
+    for i, dev in enumerate(devices.get_devices()):
+        print(f'#{i+1}: {dev["friendly_name"]} ({dev["location"]})')
 
 
 if __name__ == '__main__':

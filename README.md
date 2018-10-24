@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/vydia.svg?style=flat)](https://pypi.python.org/pypi/vydia)
 [![Build Status](https://img.shields.io/travis/kpj/Vydia.svg?style=flat)](https://travis-ci.org/kpj/Vydia)
 
-A modularized video player written in Python (supporting AirPlay).
+A modularized video player written in Python (supporting local, AirPlay and DLNA playback).
 
 ![Vydia-gif](docs/vydia.gif)
 
@@ -29,13 +29,16 @@ $ vydia --help
 Usage: vydia [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  --video / --no-video  Suppress mpv video output.
-  --airplay TEXT        Use airplay server if specified (format: "<ip>:<port>").
-  --help                Show this message and exit.
+  --video / --no-video    Suppress mpv video output.
+  --titles / --no-titles  Display title at beginning of each video.
+  --remote TEXT           Use remote server if specified (format:
+                          "airplay::<ip>:<port>", "dlna::<url>").
+  --help                  Show this message and exit.
 
 Commands:
   add_playlist          Add new playlist by id.
   list_airplay_devices  List available airplay devices.
+  list_dlna_devices     List available DLNA devices.
 ```
 
 Additionally, an internal commandline can be summoned by typing `:` (note: it supports autocompletion using `[TAB]`).
